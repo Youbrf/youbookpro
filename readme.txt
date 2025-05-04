@@ -1,55 +1,41 @@
-=== Youbookpro ===
-Contributors:      The WordPress Contributors
-Tags:              block
-Tested up to:      6.7
-Stable tag:        0.1.0
-License:           GPL-2.0-or-later
-License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+=== YouBookPro ===
+Contributors: Youssef Chennou
+Tags: réservation, prise de rendez-vous, agenda, salon, planning
+Requires at least: 6.0
+Tested up to: 6.8
+Requires PHP: 7.4
+Stable tag: 0.1.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Example block scaffolded with Create Block tool.
+Un plugin de réservation flexible et évolutif pour les professionnels : gestion des clients, employés, services et créneaux horaires.
 
 == Description ==
+YouBookPro est un système de réservation complet et personnalisable conçu pour les salons, thérapeutes, esthéticiennes, et autres professionnels.
 
-This is the long description. No limit, and you can use Markdown (as well as in the following sections).
-
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+Fonctionnalités prévues :
+- Réservations en ligne avec gestion dynamique des créneaux.
+- Gestion des clients, employés, services.
+- Création de blocs Gutenberg (formulaires).
+- Panneau d'administration centralisé.
 
 == Installation ==
-
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload the plugin files to the `/wp-content/plugins/youbookpro` directory, or install the plugin through the WordPress plugins screen directly.
-1. Activate the plugin through the 'Plugins' screen in WordPress
-
+1. Uploadez le dossier du plugin dans `wp-content/plugins/youbookpro`.
+2. Activez le plugin dans le menu Extensions de WordPress.
+3. Configurez les services, disponibilités et employés dans le menu "YouBookPro".
 
 == Frequently Asked Questions ==
+= Est-ce compatible avec tous les thèmes WordPress ? =
+Oui, tant que votre thème suit les standards WordPress.
 
-= A question that someone might have =
-
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
-
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+= Peut-on personnaliser le formulaire de réservation ? =
+Oui. Vous pouvez l'étendre via blocs Gutenberg ou du code.
 
 == Changelog ==
-
 = 0.1.0 =
-* Release
+* Initialisation du plugin. Structure de base, CPTs créés.
 
-== Arbitrary section ==
+== Upgrade Notice ==
+= 0.1.0 =
+Première version stable du plugin.
 
-You may provide arbitrary sections, in the same format as the ones above. This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation." Arbitrary sections will be shown below the built-in sections outlined above.
