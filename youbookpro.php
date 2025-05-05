@@ -17,12 +17,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+require_once plugin_dir_path(__FILE__) . 'includes/helpers/logger.php';
+
+
 // Inclure les CPT
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/admin-menu.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/reservation.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/client.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/service.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/employe.php';
+
+// Meta Boxes
+require_once plugin_dir_path(__FILE__) . 'includes/meta-boxes/reservation-meta.php';
+
+require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
+
+// Enqueue JS/CSS
+function youbookpro_enqueue_assets() {
+    wp_enqueue_style('flatpickr-css', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
+    wp_enqueue_style('youbookpro-form', plugin_dir_url(__FILE__) . 'assets/css/booking-form.css');
+    wp_enqueue_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', [], false, true);
+    wp_enqueue_script('youbookpro-form', plugin_dir_url(__FILE__) . 'assets/js/booking-form.js', ['jquery', 'flatpickr-js'], false, true);
+}
+add_action('wp_enqueue_scripts', 'youbookpro_enqueue_assets');
+
+// Shortcode pour afficher le formulaire
+function youbookpro_booking_form_shortcode() {
+    ob_start();
+    include plugin_dir_path(__FILE__) . 'templates/booking-form.php';
+    return ob_get_clean();
+}
+add_shortcode('youbookpro_booking_form', 'youbookpro_booking_form_shortcode');
 
 
 /**
