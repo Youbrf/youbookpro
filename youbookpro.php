@@ -29,6 +29,10 @@ require_once plugin_dir_path(__FILE__) . 'includes/cpt/employe.php';
 
 require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
 
+// Relations
+require_once plugin_dir_path(__FILE__) . 'includes/relations/reservation-client-columns.php';
+require_once plugin_dir_path(__FILE__) . 'includes/relations/service-employe-columns.php';
+
 // Enqueue JS/CSS
 function youbookpro_enqueue_assets() {
     wp_enqueue_style('flatpickr-css', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
