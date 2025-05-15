@@ -56,10 +56,39 @@ function enqueue_calendar_assets($hook) {
         true
     );
     wp_enqueue_script('calendar-init');
+	wp_localize_script('calendar-init', 'ajaxurl', admin_url('admin-ajax.php'));
     youbookpro_log('Script calendar-init.js en file d\'attente');
 
 }
 add_action('admin_enqueue_scripts', 'enqueue_calendar_assets');
 
+function youbookpro_get_reservations() {
+    $args = array(
+        'post_type' => 'youbook_reservation',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+    );
 
+    $reservations = get_posts($args);
+    $events = [];
+
+    foreach ($reservations as $reservation) {
+        $date = get_post_meta($reservation->ID, '_youbook_reservation_date', true);
+        $time = get_post_meta($reservation->ID, '_youbook_reservation_time', true);
+        $client_id = get_post_meta($reservation->ID, '_youbook_reservation_client_id', true);
+        $client_name = $client_id ? get_the_title($client_id) : 'Client inconnu';
+
+        if ($date && $time) {
+            $events[] = [
+                'id' => $reservation->ID,
+                'title' => get_the_title($reservation) . ' - ' . $client_name,
+                'start' => $date . 'T' . $time,
+                'allDay' => false
+            ];
+        }
+    }
+
+    wp_send_json($events);
+}
+add_action('wp_ajax_youbookpro_get_reservations', 'youbookpro_get_reservations');
 
