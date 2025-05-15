@@ -77,8 +77,17 @@ function youbookpro_custom_column_content($column, $post_id) {
             break;
 
         case 'reservation_service':
-            $service = get_post_meta($post_id, '_youbook_reservation_service', true);
-            echo esc_html($service) ?: '<em>Non assigné</em>';
+            $services_serialized = get_post_meta($post_id, '_youbook_reservation_services', true);
+            $services = maybe_unserialize($services_serialized);
+
+            if (!empty($services) && is_array($services)) {
+                $output = array_map(function($service) {
+                    return esc_html($service['title']);
+                }, $services);
+                echo implode(',<br>', $output);
+            } else {
+                echo '<em>Non assigné</em>';
+            }
             break;
     }
 }
