@@ -36,22 +36,31 @@ require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/relations/reservation-client-columns.php';
 require_once plugin_dir_path(__FILE__) . 'includes/relations/service-employe-columns.php';
 
-// Enqueue JS/CSS
 function youbookpro_enqueue_assets() {
-    wp_enqueue_style('flatpickr-css', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
-    wp_enqueue_style('youbookpro-form', plugin_dir_url(__FILE__) . 'assets/css/booking-form.css');
-    wp_enqueue_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', [], false, true);
-    wp_enqueue_script('youbookpro-form', plugin_dir_url(__FILE__) . 'assets/js/booking-form.js', ['jquery', 'flatpickr-js'], false, true);
+    // Flatpickr
+    wp_enqueue_script('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr', [], null, true);
+    wp_enqueue_style('flatpickr-style', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
+
+    // Ton script custom
+    wp_enqueue_script('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/js/youbookpro-front.js', ['jquery', 'flatpickr'], '1.0', true);
+    wp_enqueue_style('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/css/youbookpro-front.css');
+
+	wp_localize_script('youbookpro-front', 'youbookpro_ajax', [
+    'ajax_url' => admin_url('admin-ajax.php'),
+	]);
 }
 add_action('wp_enqueue_scripts', 'youbookpro_enqueue_assets');
 
-// Shortcode pour afficher le formulaire
-function youbookpro_booking_form_shortcode() {
-    ob_start();
-    include plugin_dir_path(__FILE__) . 'templates/booking-form.php';
-    return ob_get_clean();
+
+function youbookpro_enqueue_front_scripts() {
+    wp_enqueue_script('list-services', plugin_dir_url(__FILE__) . 'assets/js/list-services.js', [], false, true);
+    wp_enqueue_style('list-services', plugin_dir_url(__FILE__) . 'assets/css/list-services.css');
 }
-add_shortcode('youbookpro_booking_form', 'youbookpro_booking_form_shortcode');
+add_action('wp_enqueue_scripts', 'youbookpro_enqueue_front_scripts');
+
+
+// shortcodes
+require_once plugin_dir_path(__FILE__) . 'includes/shortcode/list-services.php';
 
 
 /**

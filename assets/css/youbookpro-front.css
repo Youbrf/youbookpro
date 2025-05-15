@@ -1,0 +1,13 @@
+.slot-btn {
+    margin: 5px;
+    padding: 8px 12px;
+    border: 1px solid #0073aa;
+    background: #f1f1f1;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.slot-btn.selected {
+    background: #0073aa;
+    color: #fff;
+}

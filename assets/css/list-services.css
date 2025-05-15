@@ -1,0 +1,29 @@
+.service-category {
+    margin-bottom: 40px;
+}
+.service-list {
+    list-style: none;
+    padding: 0;
+}
+.service-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.service-item.selected {
+    background-color: #010b13;
+    border-color: #aa0017;
+}
+#service-summary {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0d0606;
+    padding: 15px;
+    border-top: 2px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999;
+}

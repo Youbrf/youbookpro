@@ -11,13 +11,13 @@ function youbookpro_register_reservation_cpt() {
             'singular_name'      => 'Réservation',
             'add_new_item'       => 'Ajouter une réservation',
             'edit_item'          => 'Éditer la réservation',
-            'all_items'          => 'Toutes les réservations',
+            'all_items'          => 'Réservations',
             'view_item'          => 'Voir la réservation',
         ],
         'public'        => true,
         'show_in_menu'  => 'youbookpro_dashboard', // menu parent personnalisé
         'menu_icon'     => 'dashicons-calendar-alt',
-        'supports'      => ['title', 'custom-fields'],
+        'supports'      => ['title'],
         'show_in_rest'  => true,
         'has_archive'   => false,
     ];
