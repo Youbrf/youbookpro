@@ -31,6 +31,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/cpt/categorie-service.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/employe.php';
 
 require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/api/services-api.php';
 
 
 
