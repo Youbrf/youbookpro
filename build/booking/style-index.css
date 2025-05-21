@@ -1,16 +1,47 @@
 /*!***********************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/booking/style.scss ***!
   \***********************************************************************************************************************************************************************************************************************************************/
-/**
- * The following styles get applied both on the front of your site
- * and in the editor.
- *
- * Replace them with your own styles or remove the file completely.
- */
-.wp-block-create-block-booking {
-  background-color: #21759b;
-  color: #fff;
-  padding: 2px;
+.services-section {
+  margin-top: 2rem;
+}
+
+.services-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.category-block {
+  margin-bottom: 2rem;
+}
+
+.category-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #3c4cc6;
+  text-align: center;
+}
+
+.category-table-wrapper {
+  overflow-x: auto;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  background-color: #010101;
+}
+
+.category-table th,
+.category-table td {
+  padding: 12px 16px;
+  border: 1px solid #ffffff;
+  text-align: left;
+}
+
+.category-table th {
+  background-color: #000000;
+  font-weight: bold;
 }
 
 /*# sourceMappingURL=style-index.css.map*/

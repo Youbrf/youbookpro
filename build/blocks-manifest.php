@@ -4,12 +4,12 @@ return array(
 	'booking' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
-		'name' => 'create-block/booking',
+		'name' => 'youbookpro/booking',
 		'version' => '0.1.0',
 		'title' => 'Booking',
 		'category' => 'widgets',
 		'icon' => 'calendar-alt',
-		'description' => 'Réservation de services',
+		'description' => 'Bloc de réservation de services via YouBookPro',
 		'example' => array(
 			
 		),
