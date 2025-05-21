@@ -1,17 +1,17 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "create-block/youbookpro",
+	"name": "create-block/booking",
 	"version": "0.1.0",
-	"title": "Youbookpro",
+	"title": "Booking",
 	"category": "widgets",
-	"icon": "smiley",
-	"description": "Example block scaffolded with Create Block tool.",
+	"icon": "calendar-alt",
+	"description": "Réservation de services",
 	"example": {},
 	"supports": {
 		"html": false
 	},
-	"textdomain": "youbookpro",
+	"textdomain": "booking",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",

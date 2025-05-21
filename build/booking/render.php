@@ -4,5 +4,5 @@
  */
 ?>
 <p <?php echo get_block_wrapper_attributes(); ?>>
-	<?php esc_html_e( 'Youbookpro – hello from a dynamic block!', 'youbookpro' ); ?>
+	<?php esc_html_e( 'Booking – hello from a dynamic block!', 'booking' ); ?>
 </p>
