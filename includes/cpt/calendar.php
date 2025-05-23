@@ -62,7 +62,7 @@ function enqueue_calendar_assets($hook) {
 }
 add_action('admin_enqueue_scripts', 'enqueue_calendar_assets');
 
-function youbookpro_get_reservations() {
+function youbookpro_get_reservations_calendar() {
     $args = array(
         'post_type' => 'youbook_reservation',
         'posts_per_page' => -1,
@@ -90,5 +90,5 @@ function youbookpro_get_reservations() {
 
     wp_send_json($events);
 }
-add_action('wp_ajax_youbookpro_get_reservations', 'youbookpro_get_reservations');
+add_action('wp_ajax_youbookpro_get_reservations', 'youbookpro_get_reservations_calendar');
 

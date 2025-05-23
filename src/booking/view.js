@@ -6,7 +6,59 @@ function BookingBlock() {
     const [selectedServices, setSelectedServices] = useState([]);
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); 
+    const [error, setError] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [reservedSlots, setReservedSlots] = useState([]);
+    const [availableSlots, setAvailableSlots] = useState([]);
+    const [reservations, setReservations] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
+    const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
+
+    const generateAvailableSlots = (reservations) => {
+        const opening = 9 * 60;    
+        const closing = 17 * 60;  
+        const interval = 15;      
+        const durationNeeded = totalDuration; 
+
+        const slots = [];
+
+        for (let t = opening; t <= closing - durationNeeded; t += interval) {
+            const slotStart = t;
+            const slotEnd = t + durationNeeded;
+
+            if (slotEnd > closing) {
+                continue;
+            }
+
+            const overlap = reservations.some(r => {
+                return (slotStart < r.end && slotEnd > r.start);
+            });
+
+            if (!overlap) {
+                slots.push(minutesToTime(slotStart));
+            }
+        }
+
+        setAvailableSlots(slots);
+    };
+
+    const fetchReservedSlots = (date) => {
+        fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+                setReservedSlots(data.map(r => r.time));
+                setReservations(data);
+
+                const transformed = data.map(r => {
+                    const start = parseTime(r.time);
+                    const end = start + parseInt(r.duration);
+                    return { start, end };
+                });
+
+                generateAvailableSlots(transformed);
+            });
+    };
+
 
     const toggleService = (service) => {
         setSelectedServices(prev => {
@@ -26,6 +78,21 @@ function BookingBlock() {
     };
 
 
+    useEffect(() => {
+        fetch('/wp-json/youbookpro/v1/reservations')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement des réservations');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setReservations(data);
+            })
+            .catch(error => {
+                console.error('Erreur fetch réservations:', error);
+            });
+    }, []);
 
     useEffect(() => {
         fetch('/wp-json/youbookpro/v1/services')
@@ -116,10 +183,57 @@ function BookingBlock() {
                             <li key={service.id}>{decodeHTMLEntities(service.title)} - {service.duration} min</li>
                         ))}
                     </ul>
+                    <input
+                        type="date"
+                        onChange={e => {
+                            setSelectedDate(e.target.value);
+                            fetchReservedSlots(e.target.value);
+                        }}
+                    />
+                    <div className="available-slots">
+                        <h4>Créneaux disponibles pour le {selectedDate}</h4>
+                        <ul className="slots-list">
+                            {availableSlots.map(time => (
+                                <li key={time}>
+                                    <button
+                                        className={selectedSlot === time ? 'selected' : ''}
+                                        onClick={() => setSelectedSlot(time)}
+                                    >
+                                        {time}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    {selectedSlot && (
+                        <div className="next-step-bar centered">
+                            <div>
+                                <strong>Créneau sélectionné :</strong> {selectedSlot}
+                            </div>
+                            <button onClick={() => setStep(3)}>Passer à l’étape suivante →</button>
+                        </div>
+                    )}
                     <button onClick={() => setStep(1)}>Retour</button>
                 </div>
             )}
 
+            {step === 3 && (
+                <div className="confirmation-section">
+                    <h3>Confirmation de la réservation</h3>
+                    <p><strong>Date :</strong> {selectedDate}</p>
+                    <p><strong>Heure :</strong> {selectedSlot}</p>
+                    <ul>
+                        {selectedServices.map(service => (
+                            <li key={service.id}>{decodeHTMLEntities(service.title)} – {service.duration} min</li>
+                        ))}
+                    </ul>
+                    <p><strong>Durée totale :</strong> {totalDuration} min</p>
+                    <p><strong>Montant total :</strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0)} €</p>
+
+                    <button onClick={() => setStep(2)}>← Retour au créneau</button>
+                    
+                </div>
+            )}
         </div>
     );
 
@@ -142,6 +256,16 @@ function decodeHTMLEntities(text) {
     return txt.value;
 }
 
+function parseTime(timeStr) {
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function minutesToTime(minutes) {
+    const h = Math.floor(minutes / 60).toString().padStart(2, '0');
+    const m = (minutes % 60).toString().padStart(2, '0');
+    return `${h}:${m}`;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('youbookpro-booking-root');
