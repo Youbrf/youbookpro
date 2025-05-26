@@ -1,1 +1,466 @@
-(()=>{"use strict";var e={338:(e,t,r)=>{var s=r(795);t.H=s.createRoot,s.hydrateRoot},795:e=>{e.exports=window.ReactDOM}},t={};const r=window.React;var s=function r(s){var n=t[s];if(void 0!==n)return n.exports;var i=t[s]={exports:{}};return e[s](i,i.exports,r),i.exports}(338);const n=window.ReactJSXRuntime;function i(){const[e,t]=(0,r.useState)(1),[s,i]=(0,r.useState)([]),[l,a]=(0,r.useState)([]),[d,u]=(0,r.useState)(!0),[h,x]=(0,r.useState)(null),[j,p]=(0,r.useState)(null),[m,v]=(0,r.useState)([]),[f,g]=(0,r.useState)([]),[b,k]=(0,r.useState)([]),[S,N]=(0,r.useState)(null),C=s.reduce(((e,t)=>e+parseInt(t.duration)),0);return(0,r.useEffect)((()=>{fetch("/wp-json/youbookpro/v1/reservations").then((e=>{if(!e.ok)throw new Error("Erreur lors du chargement des réservations");return e.json()})).then((e=>{k(e)})).catch((e=>{console.error("Erreur fetch réservations:",e)}))}),[]),(0,r.useEffect)((()=>{fetch("/wp-json/youbookpro/v1/services").then((e=>{if(!e.ok)throw new Error("Erreur de chargement des services");return e.json()})).then((e=>{a(e),u(!1)})).catch((e=>{console.error("Erreur lors du chargement des services:",e),u(!1)}))}),[]),(0,r.useEffect)((()=>{if(h){const e=setTimeout((()=>x(null)),3e3);return()=>clearTimeout(e)}}),[h]),(0,n.jsxs)("div",{className:"youbookpro-booking",children:[1===e&&(0,n.jsxs)("div",{className:"services-section",children:[d?(0,n.jsx)("p",{children:"Chargement des services..."}):Object.entries(o(l)).map((([e,t])=>(0,n.jsxs)("div",{className:"category-block",children:[(0,n.jsx)("h4",{className:"category-title",children:c(e)}),(0,n.jsxs)("table",{className:"category-table",children:[(0,n.jsx)("thead",{children:(0,n.jsxs)("tr",{children:[(0,n.jsx)("th",{children:"Nom"}),(0,n.jsx)("th",{children:"Prix"}),(0,n.jsx)("th",{children:"Durée"}),(0,n.jsx)("th",{})]})}),(0,n.jsx)("tbody",{children:t.map((e=>(0,n.jsxs)("tr",{children:[(0,n.jsx)("td",{children:c(e.title)}),(0,n.jsxs)("td",{children:[e.price," €"]}),(0,n.jsxs)("td",{children:[e.duration," min"]}),(0,n.jsx)("td",{children:(0,n.jsx)("button",{onClick:()=>(e=>{i((t=>t.find((t=>t.id===e.id))?(x(null),t.filter((t=>t.id!==e.id))):t.length>=2?(x("Vous pouvez sélectionner jusqu'à 2 services maximum."),t):(x(null),[...t,e])))})(e),children:s.find((t=>t.id===e.id))?"Retirer":"Sélectionner"})})]},e.id)))})]})]},e))),h&&(0,n.jsx)("div",{className:"error-popup",children:h}),s.length>0&&(0,n.jsxs)("div",{className:"next-step-bar centered",children:[(0,n.jsxs)("div",{children:[(0,n.jsx)("strong",{children:s.length})," service(s) sélectionné(s) –",(0,n.jsxs)("strong",{children:[" ",s.reduce(((e,t)=>e+parseFloat(t.price)),0)," €"]})]}),(0,n.jsx)("button",{onClick:()=>t(2),children:"Choisir un créneau →"})]})]}),2===e&&(0,n.jsxs)("div",{className:"slots-section",children:[(0,n.jsx)("h3",{children:"Créneaux disponibles pour :"}),(0,n.jsx)("ul",{children:s.map((e=>(0,n.jsxs)("li",{children:[c(e.title)," - ",e.duration," min"]},e.id)))}),(0,n.jsx)("input",{type:"date",onChange:e=>{var t;p(e.target.value),t=e.target.value,fetch(`/wp-json/youbookpro/v1/reservations?date=${t}`).then((e=>e.json())).then((e=>{v(e.map((e=>e.time))),k(e),(e=>{const t=C,r=[];for(let n=540;n<=1020-t;n+=15){const i=n,o=n+t;o>1020||e.some((e=>i<e.end&&o>e.start))||r.push((s=i,`${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`))}var s;g(r)})(e.map((e=>{const t=function(e){const[t,r]=e.split(":").map(Number);return 60*t+r}(e.time);return{start:t,end:t+parseInt(e.duration)}})))}))}}),(0,n.jsxs)("div",{className:"available-slots",children:[(0,n.jsxs)("h4",{children:["Créneaux disponibles pour le ",j]}),(0,n.jsx)("ul",{className:"slots-list",children:f.map((e=>(0,n.jsx)("li",{children:(0,n.jsx)("button",{className:S===e?"selected":"",onClick:()=>N(e),children:e})},e)))})]}),S&&(0,n.jsxs)("div",{className:"next-step-bar centered",children:[(0,n.jsxs)("div",{children:[(0,n.jsx)("strong",{children:"Créneau sélectionné :"})," ",S]}),(0,n.jsx)("button",{onClick:()=>t(3),children:"Passer à l’étape suivante →"})]}),(0,n.jsx)("button",{onClick:()=>t(1),children:"Retour"})]}),3===e&&(0,n.jsxs)("div",{className:"confirmation-section",children:[(0,n.jsx)("h3",{children:"Confirmation de la réservation"}),(0,n.jsxs)("p",{children:[(0,n.jsx)("strong",{children:"Date :"})," ",j]}),(0,n.jsxs)("p",{children:[(0,n.jsx)("strong",{children:"Heure :"})," ",S]}),(0,n.jsx)("ul",{children:s.map((e=>(0,n.jsxs)("li",{children:[c(e.title)," – ",e.duration," min"]},e.id)))}),(0,n.jsxs)("p",{children:[(0,n.jsx)("strong",{children:"Durée totale :"})," ",C," min"]}),(0,n.jsxs)("p",{children:[(0,n.jsx)("strong",{children:"Montant total :"})," ",s.reduce(((e,t)=>e+parseFloat(t.price)),0)," €"]}),(0,n.jsx)("button",{onClick:()=>t(2),children:"← Retour au créneau"})]})]})}function o(e){return e.reduce(((e,t)=>{const r=t.category?.name||"Autres";return e[r]||(e[r]=[]),e[r].push(t),e}),{})}function c(e){const t=document.createElement("textarea");return t.innerHTML=e,t.value}document.addEventListener("DOMContentLoaded",(()=>{const e=document.getElementById("youbookpro-booking-root");e&&(0,s.H)(e).render((0,n.jsx)(i,{}))}))})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./node_modules/react-dom/client.js":
+/*!******************************************!*\
+  !*** ./node_modules/react-dom/client.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+var m = __webpack_require__(/*! react-dom */ "react-dom");
+if (false) {} else {
+  var i = m.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+  exports.createRoot = function(c, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.createRoot(c, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+  exports.hydrateRoot = function(c, h, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.hydrateRoot(c, h, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+}
+
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = window["React"];
+
+/***/ }),
+
+/***/ "react-dom":
+/*!***************************!*\
+  !*** external "ReactDOM" ***!
+  \***************************/
+/***/ ((module) => {
+
+module.exports = window["ReactDOM"];
+
+/***/ }),
+
+/***/ "react/jsx-runtime":
+/*!**********************************!*\
+  !*** external "ReactJSXRuntime" ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["ReactJSXRuntime"];
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+/*!*****************************!*\
+  !*** ./src/booking/view.js ***!
+  \*****************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+function BookingBlock() {
+  const [step, setStep] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1);
+  const [selectedServices, setSelectedServices] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [services, setServices] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
+  const [error, setError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  const [selectedDate, setSelectedDate] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  const [reservedSlots, setReservedSlots] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [availableSlots, setAvailableSlots] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [reservations, setReservations] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+  const [selectedSlot, setSelectedSlot] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
+  const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
+  const handleSubmit = e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const clientData = {
+      first_name: formData.get("first_name"),
+      last_name: formData.get("last_name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      date: selectedDate,
+      time: selectedSlot,
+      services: selectedServices.map(s => s.id),
+      duration: totalDuration
+    };
+    fetch('/wp-json/youbookpro/v1/reserve', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(clientData)
+    }).then(res => res.json()).then(data => {
+      alert('Réservation confirmée !');
+      setStep(1);
+      setSelectedServices([]);
+      setSelectedSlot(null);
+      setSelectedDate(null);
+    }).catch(error => {
+      console.error("Erreur lors de la réservation :", error);
+      alert("Erreur lors de la réservation.");
+    });
+  };
+  const generateAvailableSlots = reservations => {
+    const opening = 9 * 60;
+    const closing = 17 * 60;
+    const interval = 15;
+    const durationNeeded = totalDuration;
+    const slots = [];
+    for (let t = opening; t <= closing - durationNeeded; t += interval) {
+      const slotStart = t;
+      const slotEnd = t + durationNeeded;
+      if (slotEnd > closing) {
+        continue;
+      }
+      const overlap = reservations.some(r => {
+        return slotStart < r.end && slotEnd > r.start;
+      });
+      if (!overlap) {
+        slots.push(minutesToTime(slotStart));
+      }
+    }
+    setAvailableSlots(slots);
+  };
+  const fetchReservedSlots = date => {
+    fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`).then(res => res.json()).then(data => {
+      setReservedSlots(data.map(r => r.time));
+      setReservations(data);
+      const transformed = data.map(r => {
+        const start = parseTime(r.time);
+        const end = start + parseInt(r.duration);
+        return {
+          start,
+          end
+        };
+      });
+      generateAvailableSlots(transformed);
+    });
+  };
+  const toggleService = service => {
+    setSelectedServices(prev => {
+      const exists = prev.find(s => s.id === service.id);
+      if (exists) {
+        setError(null);
+        return prev.filter(s => s.id !== service.id);
+      } else {
+        if (prev.length >= 2) {
+          setError("Vous pouvez sélectionner jusqu'à 2 services maximum.");
+          return prev;
+        }
+        setError(null);
+        return [...prev, service];
+      }
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    fetch('/wp-json/youbookpro/v1/reservations').then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement des réservations');
+      }
+      return response.json();
+    }).then(data => {
+      setReservations(data);
+    }).catch(error => {
+      console.error('Erreur fetch réservations:', error);
+    });
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    fetch('/wp-json/youbookpro/v1/services').then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur de chargement des services');
+      }
+      return response.json();
+    }).then(data => {
+      setServices(data);
+      setLoading(false);
+    }).catch(error => {
+      console.error('Erreur lors du chargement des services:', error);
+      setLoading(false);
+    });
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "youbookpro-booking",
+    children: [step === 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "services-section",
+      children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: "Chargement des services..."
+      }) : Object.entries(groupServicesByCategory(services)).map(([category, categoryServices]) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "category-block",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h4", {
+          className: "category-title",
+          children: decodeHTMLEntities(category)
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
+          className: "category-table",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("thead", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+                children: "Nom"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+                children: "Prix"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+                children: "Dur\xE9e"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {})]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+            children: categoryServices.map(service => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                children: decodeHTMLEntities(service.title)
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("td", {
+                children: [service.price, " \u20AC"]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("td", {
+                children: [service.duration, " min"]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                  onClick: () => toggleService(service),
+                  children: selectedServices.find(s => s.id === service.id) ? 'Retirer' : 'Sélectionner'
+                })
+              })]
+            }, service.id))
+          })]
+        })]
+      }, category)), error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "error-popup",
+        children: error
+      }), selectedServices.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "next-step-bar centered",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+            children: selectedServices.length
+          }), " service(s) s\xE9lectionn\xE9(s) \u2013", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("strong", {
+            children: [" ", selectedServices.reduce((total, s) => total + parseFloat(s.price), 0), " \u20AC"]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          onClick: () => setStep(2),
+          children: "Choisir un cr\xE9neau \u2192"
+        })]
+      })]
+    }), step === 2 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "slots-section",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+        children: "Cr\xE9neaux disponibles pour :"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
+        children: selectedServices.map(service => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("li", {
+          children: [decodeHTMLEntities(service.title), " - ", service.duration, " min"]
+        }, service.id))
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+        type: "date",
+        onChange: e => {
+          setSelectedDate(e.target.value);
+          fetchReservedSlots(e.target.value);
+        }
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "available-slots",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("h4", {
+          children: ["Cr\xE9neaux disponibles pour le ", selectedDate]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
+          className: "slots-list",
+          children: availableSlots.map(time => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("li", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              className: selectedSlot === time ? 'selected' : '',
+              onClick: () => setSelectedSlot(time),
+              children: time
+            })
+          }, time))
+        })]
+      }), selectedSlot && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "next-step-bar centered",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+            children: "Cr\xE9neau s\xE9lectionn\xE9 :"
+          }), " ", selectedSlot]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          onClick: () => setStep(3),
+          children: "Passer \xE0 l\u2019\xE9tape suivante \u2192"
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        onClick: () => setStep(1),
+        children: "Retour"
+      })]
+    }), step === 3 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "confirmation-section",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+        children: "Confirmation de la r\xE9servation"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+          children: "Date :"
+        }), " ", selectedDate]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+          children: "Heure :"
+        }), " ", selectedSlot]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
+        children: selectedServices.map(service => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("li", {
+          children: [decodeHTMLEntities(service.title), " \u2013 ", service.duration, " min"]
+        }, service.id))
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+          children: "Dur\xE9e totale :"
+        }), " ", totalDuration, " min"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+          children: "Montant total :"
+        }), " ", selectedServices.reduce((total, s) => total + parseFloat(s.price), 0), " \u20AC"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
+        onSubmit: handleSubmit,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+          type: "text",
+          placeholder: "Pr\xE9nom",
+          name: "first_name",
+          required: true
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+          type: "text",
+          placeholder: "Nom",
+          name: "last_name",
+          required: true
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+          type: "email",
+          placeholder: "Email",
+          name: "email",
+          required: true
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+          type: "tel",
+          placeholder: "T\xE9l\xE9phone",
+          name: "phone",
+          required: true
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          type: "submit",
+          children: "Confirmer la r\xE9servation"
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+        onClick: () => setStep(2),
+        children: "\u2190 Retour au cr\xE9neau"
+      })]
+    })]
+  });
+}
+function groupServicesByCategory(services) {
+  return services.reduce((acc, service) => {
+    const category = service.category?.name || 'Autres';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(service);
+    return acc;
+  }, {});
+}
+function decodeHTMLEntities(text) {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = text;
+  return txt.value;
+}
+function parseTime(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+function minutesToTime(minutes) {
+  const h = Math.floor(minutes / 60).toString().padStart(2, '0');
+  const m = (minutes % 60).toString().padStart(2, '0');
+  return `${h}:${m}`;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('youbookpro-booking-root');
+  if (container) {
+    const root = (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(container);
+    root.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(BookingBlock, {}));
+  }
+});
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=view.js.map

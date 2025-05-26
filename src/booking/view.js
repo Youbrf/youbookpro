@@ -14,6 +14,39 @@ function BookingBlock() {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const clientData = {
+            first_name: formData.get("first_name"),
+            last_name: formData.get("last_name"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            date: selectedDate,
+            time: selectedSlot,
+            services: selectedServices.map(s => s.id),
+            duration: totalDuration
+        };
+
+        fetch('/wp-json/youbookpro/v1/reserve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(clientData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert('Réservation confirmée !');
+            setStep(1);
+            setSelectedServices([]);
+            setSelectedSlot(null);
+            setSelectedDate(null);
+        })
+        .catch(error => {
+            console.error("Erreur lors de la réservation :", error);
+            alert("Erreur lors de la réservation.");
+        });
+    };
     const generateAvailableSlots = (reservations) => {
         const opening = 9 * 60;    
         const closing = 17 * 60;  
@@ -230,8 +263,15 @@ function BookingBlock() {
                     <p><strong>Durée totale :</strong> {totalDuration} min</p>
                     <p><strong>Montant total :</strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0)} €</p>
 
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" placeholder="Prénom" name="first_name" required />
+                        <input type="text" placeholder="Nom" name="last_name" required />
+                        <input type="email" placeholder="Email" name="email" required />
+                        <input type="tel" placeholder="Téléphone" name="phone" required />
+                        <button type="submit">Confirmer la réservation</button>
+                    </form>
+
                     <button onClick={() => setStep(2)}>← Retour au créneau</button>
-                    
                 </div>
             )}
         </div>

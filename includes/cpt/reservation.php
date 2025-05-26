@@ -15,7 +15,7 @@ function youbookpro_register_reservation_cpt() {
             'view_item'          => 'Voir la réservation',
         ],
         'public'        => true,
-        'show_in_menu'  => 'youbookpro_dashboard', // menu parent personnalisé
+        'show_in_menu'  => 'youbookpro_dashboard',
         'menu_icon'     => 'dashicons-calendar-alt',
         'supports'      => ['title'],
         'show_in_rest'  => true,
@@ -31,7 +31,7 @@ add_action('init', 'youbookpro_register_reservation_cpt');
  * Ajoute des colonnes personnalisées dans l’admin des réservations
  */
 function youbookpro_set_custom_columns($columns) {
-    unset($columns['date']); // Supprime la colonne date par défaut
+    unset($columns['date']);
 
     $columns['reservation_date']    = 'Date';
     $columns['reservation_time']    = 'Heure';
@@ -59,9 +59,15 @@ function youbookpro_custom_column_content($column, $post_id) {
             break;
 
         case 'reservation_client':
-            $client_id = get_post_meta($post_id, '_youbook_reservation_client_id', true);
-            if ($client_id && get_post_status($client_id) === 'publish') {
-                echo '<a href="' . esc_url(get_edit_post_link($client_id)) . '">' . esc_html(get_the_title($client_id)) . '</a>';
+            $user_id = get_post_meta($post_id, '_youbook_reservation_client_id', true);
+            $user = get_userdata($user_id);
+
+            if ($user) {
+                $name = $user->first_name || $user->last_name
+                    ? trim($user->first_name . ' ' . $user->last_name)
+                    : $user->display_name;
+
+                echo '<a href="' . esc_url(get_edit_user_link($user_id)) . '">' . esc_html($name) . '</a>';
             } else {
                 echo '<em>Non assigné</em>';
             }
@@ -78,12 +84,13 @@ function youbookpro_custom_column_content($column, $post_id) {
 
         case 'reservation_service':
             $services_serialized = get_post_meta($post_id, '_youbook_reservation_services', true);
-            $services = maybe_unserialize($services_serialized);
+            $service_ids = maybe_unserialize($services_serialized);
 
-            if (!empty($services) && is_array($services)) {
-                $output = array_map(function($service) {
-                    return esc_html($service['title']);
-                }, $services);
+            if (!empty($service_ids) && is_array($service_ids)) {
+                $output = array_map(function($service_id) {
+                    $title = get_the_title($service_id);
+                    return $title ? esc_html($title) : '<em>Inconnu</em>';
+                }, $service_ids);
                 echo implode(',<br>', $output);
             } else {
                 echo '<em>Non assigné</em>';

@@ -25,7 +25,6 @@ require_once plugin_dir_path(__FILE__) . 'includes/cpt/admin-menu.php';
 
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/calendar.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/reservation.php';
-require_once plugin_dir_path(__FILE__) . 'includes/cpt/client.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/service.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/categorie-service.php';
 require_once plugin_dir_path(__FILE__) . 'includes/cpt/employe.php';
@@ -33,6 +32,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/cpt/employe.php';
 require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api/services-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api/reservations-api.php';
+require_once plugin_dir_path(__FILE__) . 'includes/api/create-reservation-api.php';
 
 
 
