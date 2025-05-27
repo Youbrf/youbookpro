@@ -32,32 +32,16 @@ function youbookpro_get_reservations(WP_REST_Request $request) {
 
     foreach ($query->posts as $post) {
         $reservation_id = $post->ID;
-        $services_data = get_post_meta($reservation_id, '_youbook_reservation_services', true);
-        $services = maybe_unserialize($services_data);
-        $total_duration = 0;
-
-        if (is_array($services)) {
-            foreach ($services as $service) {
-                if (!empty($service['id'])) {
-                    $service_id = $service['id'];
-
-                    // 👉 Récupère la durée depuis le CPT service
-                    $duration = get_post_meta($service_id, '_youbookpro_duration', true);
-                    youbookpro_log("🧩 Service ID : $service_id — Durée trouvée : $duration");
-
-                    $total_duration += intval($duration);
-                }
-            }
-        }
-
-        $time = get_post_meta($reservation_id, '_youbook_reservation_time', true);
+        $duration = get_post_meta($reservation_id, '_youbook_reservation_duration', true);
+        $time     = get_post_meta($reservation_id, '_youbook_reservation_time', true);
 
         $reservations[] = [
             'id'       => $reservation_id,
             'time'     => $time,
-            'duration' => $total_duration,
+            'duration' => intval($duration), // on force en int pour les calculs
         ];
     }
+
 
     youbookpro_log("✅ Résultat final envoyé à l'API : " . print_r($reservations, true));
 
