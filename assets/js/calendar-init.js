@@ -9,8 +9,20 @@ document.addEventListener('DOMContentLoaded', function () {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
     },
+    businessHours: {
+      daysOfWeek: [ 1, 2, 3, 4, 5, 6],
+
+      startTime: '10:00', 
+      endTime: '18:00', 
+    },
     weekNumbers: true,
     dayMaxEvents: true,
+    selectable: true,
+    navLinks: true,
+      navLinkWeekClick: function(weekStart, jsEvent) {
+        console.log('week start', weekStart.toISOString());
+        console.log('coords', jsEvent.pageX, jsEvent.pageY);
+      },
     events: {
       url: ajaxurl,
       method: 'GET',

@@ -36,6 +36,24 @@ function enqueue_calendar_assets($hook) {
         return;
     }
 
+    // Enregistrement et en file d'attente de Bootstrap 5 CSS
+    wp_register_style(
+        'bootstrap5-css',
+        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+        array(),
+        '5.3.0'
+    );
+    wp_enqueue_style('bootstrap5-css');
+
+    // Enregistrement et en file d'attente de Bootstrap Icons
+    wp_register_style(
+        'bootstrap-icons',
+        'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css',
+        array(),
+        '1.8.1'
+    );
+    wp_enqueue_style('bootstrap-icons');
+
     // Enregistrement et en file d'attente de FullCalendar
     wp_register_script(
         'fullcalendar',
@@ -45,22 +63,32 @@ function enqueue_calendar_assets($hook) {
         true
     );
     wp_enqueue_script('fullcalendar');
-    youbookpro_log('Script FullCalendar en file d\'attente');
+
+    // Enregistrement et en file d'attente du plugin Bootstrap 5 pour FullCalendar
+    wp_register_script(
+        'fullcalendar-bootstrap5',
+        'https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.8/index.global.min.js',
+        array('fullcalendar'),
+        '6.1.8',
+        true
+    );
+    wp_enqueue_script('fullcalendar-bootstrap5');
 
     // Enregistrement et en file d'attente de votre script d'initialisation
     wp_register_script(
         'calendar-init',
         plugin_dir_url(__FILE__) . '../../assets/js/calendar-init.js',
-        array('fullcalendar'),
+        array('fullcalendar', 'fullcalendar-bootstrap5'),
         '1.0.0',
         true
     );
     wp_enqueue_script('calendar-init');
-	wp_localize_script('calendar-init', 'ajaxurl', admin_url('admin-ajax.php'));
-    youbookpro_log('Script calendar-init.js en file d\'attente');
 
+    // Localisation du script pour passer des variables PHP à JavaScript
+    wp_localize_script('calendar-init', 'ajaxurl', admin_url('admin-ajax.php'));
 }
 add_action('admin_enqueue_scripts', 'enqueue_calendar_assets');
+
 
 function youbookpro_get_reservations_calendar() {
     $args = array(
@@ -75,14 +103,29 @@ function youbookpro_get_reservations_calendar() {
     foreach ($reservations as $reservation) {
         $date = get_post_meta($reservation->ID, '_youbook_reservation_date', true);
         $time = get_post_meta($reservation->ID, '_youbook_reservation_time', true);
+        $duration_minutes = get_post_meta($reservation->ID, '_youbook_reservation_duration', true);
         $client_id = get_post_meta($reservation->ID, '_youbook_reservation_client_id', true);
-        $client_name = $client_id ? get_the_title($client_id) : 'Client inconnu';
+        $user = get_userdata($client_id);
 
-        if ($date && $time) {
+        if ($user) {
+            $name = trim($user->first_name . ' ' . $user->last_name);
+            if (empty($name)) {
+                $name = $user->display_name;
+            }
+        } else {
+            $name = 'Client inconnu';
+        }
+
+        if ($date && $time && $duration_minutes) {
+            $start_datetime = new DateTime($date . ' ' . $time);
+            $end_datetime = clone $start_datetime;
+            $end_datetime->modify("+{$duration_minutes} minutes");
+
             $events[] = [
                 'id' => $reservation->ID,
-                'title' => get_the_title($reservation) . ' - ' . $client_name,
-                'start' => $date . 'T' . $time,
+                'title' => $name,
+                'start' => $start_datetime->format('c'),
+                'end' => $end_datetime->format('c'),
                 'allDay' => false
             ];
         }
@@ -91,4 +134,6 @@ function youbookpro_get_reservations_calendar() {
     wp_send_json($events);
 }
 add_action('wp_ajax_youbookpro_get_reservations', 'youbookpro_get_reservations_calendar');
+
+
 
