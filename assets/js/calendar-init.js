@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
+  function adjustTime(timeStr, offset) {
+    const [h, m] = timeStr.split(':').map(Number);
+    let date = new Date();
+    date.setHours(h + offset, m || 0, 0, 0);
+    return date.toTimeString().slice(0, 8);
+  }
+
+  const businessStart = '10:00';
+  const businessEnd = '18:00';
+
   var calendarEl = document.getElementById('calendar');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -11,25 +21,27 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
     },
     businessHours: {
-      daysOfWeek: [ 1, 2, 3, 4, 5, 6],
-
-      startTime: '10:00', 
-      endTime: '18:00', 
+      daysOfWeek: [1, 2, 3, 4, 5, 6],
+      startTime: businessStart,
+      endTime: businessEnd
     },
+    slotMinTime: adjustTime(businessStart, -1),
+    slotMaxTime: adjustTime(businessEnd, +1),
+
     weekNumbers: true,
     dayMaxEvents: true,
     selectable: true,
     navLinks: true,
-      navLinkWeekClick: function(weekStart, jsEvent) {
-        console.log('week start', weekStart.toISOString());
-        console.log('coords', jsEvent.pageX, jsEvent.pageY);
-      },
+    navLinkWeekClick: function (weekStart, jsEvent) {
+      console.log('week start', weekStart.toISOString());
+      console.log('coords', jsEvent.pageX, jsEvent.pageY);
+    },
     editable: true,
     eventStartEditable: true,
     eventDurationEditable: false,
-    eventDrop: function(info) {
-      const event = info.event;
 
+    eventDrop: function (info) {
+      const event = info.event;
       const data = new FormData();
       data.append('action', 'youbookpro_update_reservation');
       data.append('id', event.id);
@@ -40,19 +52,19 @@ document.addEventListener('DOMContentLoaded', function () {
         body: data,
         credentials: 'same-origin',
       })
-      .then(response => response.json())
-      .then(result => {
-        if (!result.success) {
-          alert('Erreur: ' + result.data);
+        .then(response => response.json())
+        .then(result => {
+          if (!result.success) {
+            alert('Erreur: ' + result.data);
+            info.revert();
+          } else {
+            console.log('Mise à jour OK');
+          }
+        })
+        .catch(() => {
+          alert('Échec de la requête');
           info.revert();
-        } else {
-          console.log('Mise à jour OK');
-        }
-      })
-      .catch(() => {
-        alert('Échec de la requête');
-        info.revert();
-      });
+        });
     },
 
     events: {
@@ -65,9 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Échec du chargement des réservations');
       }
     },
-    eventClick: function(info) {
+
+    eventClick: function (info) {
       const event = info.event;
-      const currentStart = event.start.toISOString().slice(0, 16); 
+      const currentStart = event.start.toISOString().slice(0, 16);
 
       const newStart = prompt('Nouvelle date et heure (format : AAAA-MM-JJTHH:MM)', currentStart);
       if (!newStart) return;
@@ -82,23 +95,24 @@ document.addEventListener('DOMContentLoaded', function () {
         body: data,
         credentials: 'same-origin'
       })
-      .then(response => response.json())
-      .then(result => {
-        if (!result.success) {
-          alert('Erreur : ' + result.data);
-        } else {
-          event.setStart(newStart);
-          event.setEnd(result.data.end);
-          alert('Réservation mise à jour.');
-        }
-      })
-      .catch(() => {
-        alert('Erreur réseau');
-      });
+        .then(response => response.json())
+        .then(result => {
+          if (!result.success) {
+            alert('Erreur : ' + result.data);
+          } else {
+            event.setStart(newStart);
+            event.setEnd(result.data.end);
+            alert('Réservation mise à jour.');
+          }
+        })
+        .catch(() => {
+          alert('Erreur réseau');
+        });
     },
-    eventBackgroundColor: 'rgba(193, 209, 255, 0.62)',  
-    eventBorderColor: 'rgba(0, 0, 0, 0.25)',    
-    eventTextColor: 'rgb(0, 0, 0)',           
+
+    eventBackgroundColor: 'rgba(193, 209, 255, 0.62)',
+    eventBorderColor: 'rgba(0, 0, 0, 0.25)',
+    eventTextColor: 'rgb(0, 0, 0)',
     eventTimeFormat: {
       hour: 'numeric',
       minute: '2-digit',
