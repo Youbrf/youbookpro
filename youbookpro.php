@@ -33,7 +33,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/form-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api/services-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api/reservations-api.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api/create-reservation-api.php';
-
+require_once plugin_dir_path(__FILE__) . 'includes/api/update-reservation-api.php';
 
 
 function youbookpro_enqueue_all_scripts() {

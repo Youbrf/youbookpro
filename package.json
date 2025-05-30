@@ -15,11 +15,13 @@
 		"start": "wp-scripts start --webpack-copy-php --blocks-manifest"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^30.16.0"
+		"@wordpress/scripts": "^30.7.0",
+		"rtlcss-webpack-plugin": "^4.0.7"
 	},
 	"dependencies": {
-		"@wordpress/components": "^29.9.0",
-		"@wordpress/element": "^6.23.0",
-		"@wordpress/i18n": "^5.23.0"
+		"@wordpress/components": "^28.9.0",
+		"@wordpress/element": "^6.9.0",
+		"@wordpress/i18n": "^5.9.0",
+		"core-js": "^3.42.0"
 	}
 }
