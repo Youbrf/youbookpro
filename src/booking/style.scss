@@ -82,3 +82,60 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+.week-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.week-days {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.day-btn {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+}
+
+.day-btn:hover {
+    background: #f0f0f0;
+}
+
+.day-btn.selected {
+    background: #007cba;
+    color: white;
+    border-color: #007cba;
+}
+.day-btn.disabled {
+    background-color: #eee;
+    color: #999;
+    cursor: not-allowed;
+}
+.slot-btn-vertical {
+  padding: 12px;
+  width: 100%;
+  text-align: left;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.slot-btn-vertical:hover {
+  background-color: #e0e0e0;
+}
+
+.slot-btn-vertical.selected {
+  background-color: #007cba;
+  color: white;
+  border-color: #007cba;
+}

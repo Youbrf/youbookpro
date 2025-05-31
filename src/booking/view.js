@@ -48,8 +48,8 @@ function BookingBlock() {
         });
     };
     const generateAvailableSlots = (reservations) => {
-        const opening = 9 * 60;    
-        const closing = 17 * 60;  
+        const opening = 10 * 60;    
+        const closing = 18 * 60;  
         const interval = 15;      
         const durationNeeded = totalDuration; 
 
@@ -207,7 +207,6 @@ function BookingBlock() {
                 </div>
                 
             )}
-
             {step === 2 && (
                 <div className="slots-section">
                     <h3>Créneaux disponibles pour :</h3>
@@ -216,33 +215,36 @@ function BookingBlock() {
                             <li key={service.id}>{decodeHTMLEntities(service.title)} - {service.duration} min</li>
                         ))}
                     </ul>
-                    <input
-                        type="date"
-                        onChange={e => {
-                            setSelectedDate(e.target.value);
-                            fetchReservedSlots(e.target.value);
-                        }}
-                    />
-                    <div className="available-slots">
+                    <h3>Choisissez un jour :</h3>
+
+                    <WeekSelector onDateSelected={(dateStr) => {
+                        setSelectedDate(dateStr);
+                        fetchReservedSlots(dateStr);
+                    }} />
+
+                    {selectedDate && (
+                    <div>
                         <h4>Créneaux disponibles pour le {selectedDate}</h4>
-                        <ul className="slots-list">
-                            {availableSlots.map(time => (
-                                <li key={time}>
-                                    <button
-                                        className={selectedSlot === time ? 'selected' : ''}
-                                        onClick={() => setSelectedSlot(time)}
-                                    >
-                                        {time}
-                                    </button>
-                                </li>
+                        {availableSlots.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                            {availableSlots.map(slot => (
+                            <button
+                                key={slot}
+                                className={`slot-btn-vertical ${selectedSlot === slot ? 'selected' : ''}`}
+                                onClick={() => setSelectedSlot(slot)}
+                            >
+                                {slot}
+                            </button>
                             ))}
-                        </ul>
+                        </div>
+                        ) : (
+                        <p>Aucun créneau disponible.</p>
+                        )}
                     </div>
+                    )}
                     {selectedSlot && (
                         <div className="next-step-bar centered">
-                            <div>
-                                <strong>Créneau sélectionné :</strong> {selectedSlot}
-                            </div>
+                            <div><strong>Créneau sélectionné :</strong> {selectedSlot}</div>
                             <button onClick={() => setStep(3)}>Passer à l’étape suivante →</button>
                         </div>
                     )}
@@ -314,3 +316,76 @@ document.addEventListener('DOMContentLoaded', () => {
         root.render(<BookingBlock />);
     }
 });
+
+export default function WeekSelector({ onDateSelected }) {
+    const [currentWeekStart, setCurrentWeekStart] = useState(getStartOfWeek(new Date()));
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [weekDates, setWeekDates] = useState([]);
+
+    useEffect(() => {
+        setWeekDates(generateWeekDays(currentWeekStart));
+    }, [currentWeekStart]);
+
+    useEffect(() => {
+        const formatted = selectedDate.toISOString().split('T')[0];
+        onDateSelected(formatted);
+    }, []);
+
+    const handleDayClick = (date) => {
+        const day = date.getDay();
+        if (day === 0) return; 
+        setSelectedDate(date);
+        const formatted = date.toISOString().split('T')[0];
+        onDateSelected(formatted);
+    };
+
+    return (
+        <div className="week-selector">
+            <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}>&lt;</button>
+            <div className="week-days">
+                {weekDates.map(date => {
+                    const day = date.getDate();
+                    const isSelected = selectedDate?.toDateString() === date.toDateString();
+                    const isSunday = date.getDay() === 0;
+
+                    return (
+                        <button
+                            key={date.toISOString()}
+                            className={`day-btn ${isSelected ? 'selected' : ''} ${isSunday ? 'disabled' : ''}`}
+                            onClick={() => handleDayClick(date)}
+                            disabled={isSunday}
+                            title={isSunday ? "Fermé le dimanche" : ""}
+                        >
+                            {day}
+                        </button>
+                    );
+                })}
+            </div>
+            <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}>&gt;</button>
+        </div>
+    );
+}
+
+// UTILS
+function getStartOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay(); 
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+    return new Date(d.setDate(diff));
+}
+
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function generateWeekDays(startDate) {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + i);
+        days.push(d);
+    }
+    return days;
+}
