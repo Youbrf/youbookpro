@@ -42,12 +42,12 @@ function youbookpro_enqueue_all_scripts() {
     wp_enqueue_style('flatpickr-style', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
 
     // Script et style custom principaux
-    wp_enqueue_script('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/js/youbookpro-front.js', ['jquery', 'flatpickr'], '1.0', true);
-    wp_enqueue_style('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/css/youbookpro-front.css');
+    //wp_enqueue_script('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/js/youbookpro-front.js', ['jquery', 'flatpickr'], '1.0', true);
+    //wp_enqueue_style('youbookpro-front', plugin_dir_url(__FILE__) . 'assets/css/youbookpro-front.css');
 
-    wp_localize_script('youbookpro-front', 'youbookpro_ajax', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-    ]);
+    // wp_localize_script('youbookpro-front', 'youbookpro_ajax', [
+    //     'ajax_url' => admin_url('admin-ajax.php'),
+    // ]);
 
     // Script et style pour la liste des services
     wp_enqueue_script('list-services', plugin_dir_url(__FILE__) . 'assets/js/list-services.js', [], false, true);

@@ -98,8 +98,8 @@
 
 .day-btn {
     padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #000000;
+    border-radius: 25px;
     background: white;
     cursor: pointer;
 }
@@ -114,10 +114,16 @@
     border-color: #007cba;
 }
 .day-btn.disabled {
-    background-color: #eee;
-    color: #999;
+    background-color: #eda0a0;
+    color: #ffffff;
+}
+.day-btn.reserved {
+    background-color: #f88;
+    color: #fff;
+    font-weight: bold;
     cursor: not-allowed;
 }
+
 .slot-btn-vertical {
   padding: 12px;
   width: 100%;

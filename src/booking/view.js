@@ -13,6 +13,7 @@ function BookingBlock() {
     const [reservations, setReservations] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
     const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
+    const [disabledDates, setDisabledDatesGlobal] = useState([]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -50,7 +51,7 @@ function BookingBlock() {
     const generateAvailableSlots = (reservations) => {
         const opening = 10 * 60;    
         const closing = 18 * 60;  
-        const interval = 15;      
+        const interval = 30;      
         const durationNeeded = totalDuration; 
 
         const slots = [];
@@ -76,21 +77,32 @@ function BookingBlock() {
     };
 
     const fetchReservedSlots = (date) => {
-        fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
-            .then(res => res.json())
-            .then(data => {
-                setReservedSlots(data.map(r => r.time));
-                setReservations(data);
+        // Vérifie si la date est désactivée
+        if (disabledDates.includes(date)) {
+            console.log("Date désactivée, pas de fetch :", date);
+            setReservedSlots([]);
+            setReservations([]);
+            generateAvailableSlots([]); // Vide aussi les créneaux
+            return;
+        } else {
+            console.log("Date activé, fetch :", date);
+            fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    setReservedSlots(data.map(r => r.time));
+                    setReservations(data);
 
-                const transformed = data.map(r => {
-                    const start = parseTime(r.time);
-                    const end = start + parseInt(r.duration);
-                    return { start, end };
-                });
+                    const transformed = data.map(r => {
+                        const start = parseTime(r.time);
+                        const end = start + parseInt(r.duration);
+                        return { start, end };
+                    });
 
                 generateAvailableSlots(transformed);
             });
+        }
     };
+
 
 
     const toggleService = (service) => {
@@ -217,10 +229,18 @@ function BookingBlock() {
                     </ul>
                     <h3>Choisissez un jour :</h3>
 
-                    <WeekSelector onDateSelected={(dateStr) => {
-                        setSelectedDate(dateStr);
-                        fetchReservedSlots(dateStr);
-                    }} />
+                    <WeekSelector 
+                        onDisabledDatesFetched={(disabledDates) => {
+                            console.log("Dates désactivées :", disabledDates);
+                            setDisabledDatesGlobal(disabledDates);
+                        }}
+                        onDateSelected={(dateStr) => {
+                            setSelectedDate(dateStr);
+                            fetchReservedSlots(dateStr);
+                            }}
+
+                        totalDuration={totalDuration}
+                    />
 
                     {selectedDate && (
                     <div>
@@ -308,6 +328,34 @@ function minutesToTime(minutes) {
     const m = (minutes % 60).toString().padStart(2, '0');
     return `${h}:${m}`;
 }
+function fetchAvailableSlots(date, totalDuration) {
+    return fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
+        .then(res => res.json())
+        .then(data => {
+            const transformed = data.map(r => {
+                const start = parseTime(r.time);
+                const end = start + parseInt(r.duration);
+                return { start, end };
+            });
+
+            const opening = 10 * 60;
+            const closing = 18 * 60;
+            const interval = 30;
+            const durationNeeded = totalDuration;
+            const slots = [];
+
+            for (let t = opening; t <= closing - durationNeeded; t += interval) {
+                const slotStart = t;
+                const slotEnd = t + durationNeeded;
+                const overlap = transformed.some(r => slotStart < r.end && slotEnd > r.start);
+                if (!overlap) slots.push(minutesToTime(slotStart));
+            }
+
+            return slots;
+        });
+}
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('youbookpro-booking-root');
@@ -317,10 +365,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-export default function WeekSelector({ onDateSelected }) {
-    const [currentWeekStart, setCurrentWeekStart] = useState(getStartOfWeek(new Date()));
+export default function WeekSelector({ onDateSelected, totalDuration, onDisabledDatesFetched}) {
+    const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekDates, setWeekDates] = useState([]);
+    const [disabledDates, setDisabledDates] = useState([]);
+
+    const isToday = (date) => {
+        const today = new Date();
+        return (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+        );
+    };
+
+    const disablePrevWeek = weekDates.some(date => isToday(date));
+
+    useEffect(() => {
+        const fetchDisabledDates = async () => {
+            try {
+                const pastDays = [];
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(`/wp-json/youbookpro/v1/reservations/from?from=${today}`);
+                const data = await response.json();
+
+                const results = await Promise.all(
+                    data.map(async reservation => {
+                        const date = reservation.date;
+                        const slots = await fetchAvailableSlots(date, totalDuration);
+                        return slots.length === 0 ? date : null;
+                    })
+                );
+
+                for (let i = 0; i < 362; i++) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const formatted = d.toISOString().split('T')[0];
+                    pastDays.push(formatted);
+                }
+
+                const fullDates = results.filter(date => date !== null);
+                setDisabledDates([...new Set([...fullDates, ...pastDays])]);
+                onDisabledDatesFetched?.([...new Set([...fullDates, ...pastDays])]);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des dates désactivées:', error);
+            }
+        };
+
+        fetchDisabledDates();
+    }, []);
 
     useEffect(() => {
         setWeekDates(generateWeekDays(currentWeekStart));
@@ -332,8 +426,7 @@ export default function WeekSelector({ onDateSelected }) {
     }, []);
 
     const handleDayClick = (date) => {
-        const day = date.getDay();
-        if (day === 0) return; 
+        if (date.getDay() === 0) return;
         setSelectedDate(date);
         const formatted = date.toISOString().split('T')[0];
         onDateSelected(formatted);
@@ -341,38 +434,42 @@ export default function WeekSelector({ onDateSelected }) {
 
     return (
         <div className="week-selector">
-            <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}>&lt;</button>
+            <button
+                onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
+                disabled={disablePrevWeek}
+                style={{ opacity: disablePrevWeek ? 0.3 : 1, cursor: disablePrevWeek ? 'not-allowed' : 'pointer' }}
+                title={disablePrevWeek ? "Impossible de revenir avant cette semaine" : "Semaine précédente"}
+            >
+                &lt;
+            </button>
+
             <div className="week-days">
                 {weekDates.map(date => {
                     const day = date.getDate();
                     const isSelected = selectedDate?.toDateString() === date.toDateString();
                     const isSunday = date.getDay() === 0;
+                    const formattedDate = date.toISOString().split('T')[0];
+                    const isDisabled = isSunday || disabledDates.includes(formattedDate);
 
                     return (
                         <button
-                            key={date.toISOString()}
-                            className={`day-btn ${isSelected ? 'selected' : ''} ${isSunday ? 'disabled' : ''}`}
+                            key={formattedDate}
+                            disabled={isDisabled}
+                            className={`day-btn ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                             onClick={() => handleDayClick(date)}
-                            disabled={isSunday}
-                            title={isSunday ? "Fermé le dimanche" : ""}
+                            title={isDisabled ? "Jour indisponible" : ""}
                         >
                             {day}
                         </button>
                     );
                 })}
             </div>
+
             <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}>&gt;</button>
         </div>
     );
 }
 
-// UTILS
-function getStartOfWeek(date) {
-    const d = new Date(date);
-    const day = d.getDay(); 
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
-    return new Date(d.setDate(diff));
-}
 
 function addDays(date, days) {
     const result = new Date(date);
