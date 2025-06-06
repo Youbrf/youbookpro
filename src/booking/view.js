@@ -328,31 +328,34 @@ function minutesToTime(minutes) {
     const m = (minutes % 60).toString().padStart(2, '0');
     return `${h}:${m}`;
 }
-function fetchAvailableSlots(date, totalDuration) {
-    return fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
-        .then(res => res.json())
-        .then(data => {
-            const transformed = data.map(r => {
-                const start = parseTime(r.time);
-                const end = start + parseInt(r.duration);
-                return { start, end };
-            });
+function computeAvailableSlotsLocally(reservations, totalDuration) {
+    const openingHour = 10;
+    const closingHour = 18;
+    const interval = 30;
 
-            const opening = 10 * 60;
-            const closing = 18 * 60;
-            const interval = 30;
-            const durationNeeded = totalDuration;
-            const slots = [];
+    const openingMinutes = openingHour * 60;
+    const closingMinutes = closingHour * 60;
+    
+    const allSlots = [];
+    for (let time = openingMinutes; time <= closingMinutes - totalDuration; time += interval) {
+        allSlots.push(time);
+    }
 
-            for (let t = opening; t <= closing - durationNeeded; t += interval) {
-                const slotStart = t;
-                const slotEnd = t + durationNeeded;
-                const overlap = transformed.some(r => slotStart < r.end && slotEnd > r.start);
-                if (!overlap) slots.push(minutesToTime(slotStart));
-            }
+    const reservedRanges = reservations.map(res => {
+        const [h, m] = res.time.split(':').map(Number);
+        const start = h * 60 + m;
+        const end = start + parseInt(res.duration);
+        return { start, end };
+    });
 
-            return slots;
-        });
+    const available = allSlots.filter(slot => {
+        const slotEnd = slot + totalDuration;
+        return !reservedRanges.some(res => 
+            (slot < res.end && slotEnd > res.start) // chevauchement
+        );
+    });
+    console.log(reservations, "- slots disponible :", available);
+    return available;
 }
 
 
@@ -385,29 +388,38 @@ export default function WeekSelector({ onDateSelected, totalDuration, onDisabled
     useEffect(() => {
         const fetchDisabledDates = async () => {
             try {
-                const pastDays = [];
                 const today = new Date().toISOString().split('T')[0];
                 const response = await fetch(`/wp-json/youbookpro/v1/reservations/from?from=${today}`);
-                const data = await response.json();
+                const reservations = await response.json();
 
-                const results = await Promise.all(
-                    data.map(async reservation => {
-                        const date = reservation.date;
-                        const slots = await fetchAvailableSlots(date, totalDuration);
-                        return slots.length === 0 ? date : null;
-                    })
-                );
+                const groupedByDate = {};
+                reservations.forEach(res => {
+                    if (!groupedByDate[res.date]) {
+                        groupedByDate[res.date] = [];
+                    }
+                    groupedByDate[res.date].push(res);
+                });
 
-                for (let i = 0; i < 362; i++) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    const formatted = d.toISOString().split('T')[0];
-                    pastDays.push(formatted);
+                const fullDates = Object.entries(groupedByDate).filter(([date, dayReservations]) => {
+                    const available = computeAvailableSlotsLocally(dayReservations, totalDuration);
+                    return available.length === 0;
+                }).map(([date]) => date);
+
+                const sundays = [];
+                const date = new Date();
+                for (let i = 0; i < 30; i++) {
+                    const checkDate = new Date(date);
+                    checkDate.setDate(date.getDate() + i);
+                    if (checkDate.getDay() === 0) { // 0 = dimanche
+                        sundays.push(checkDate.toISOString().split('T')[0]);
+                    }
                 }
 
-                const fullDates = results.filter(date => date !== null);
-                setDisabledDates([...new Set([...fullDates, ...pastDays])]);
-                onDisabledDatesFetched?.([...new Set([...fullDates, ...pastDays])]);
+                const allDisabled = Array.from(new Set([...fullDates, ...sundays]));
+
+                setDisabledDates(allDisabled);
+                onDisabledDatesFetched?.(allDisabled);
+
             } catch (error) {
                 console.error('Erreur lors de la récupération des dates désactivées:', error);
             }
@@ -431,7 +443,7 @@ export default function WeekSelector({ onDateSelected, totalDuration, onDisabled
         const formatted = date.toISOString().split('T')[0];
         onDateSelected(formatted);
     };
-
+    
     return (
         <div className="week-selector">
             <button
