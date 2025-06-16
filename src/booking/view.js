@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import ServiceSelection from './ServiceSelection'; 
+import SlotSelection from './SlotSelection';     
+import ConfirmationForm from './ConfirmationForm'; 
+
+import {
+    parseTime,
+    minutesToTime,
+    computeAvailableSlots,
+    OPENING_HOUR_MINUTES,
+    CLOSING_HOUR_MINUTES,
+    SLOT_INTERVAL_MINUTES
+} from './utils';
 
 function BookingBlock() {
     const [step, setStep] = useState(1);
@@ -8,137 +20,12 @@ function BookingBlock() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [reservedSlots, setReservedSlots] = useState([]);
     const [availableSlots, setAvailableSlots] = useState([]);
-    const [reservations, setReservations] = useState([]);
+    const [reservations, setReservations] = useState([]); 
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [disabledDates, setDisabledDatesGlobal] = useState([]); 
     const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
-    const [disabledDates, setDisabledDatesGlobal] = useState([]);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
-        const clientData = {
-            first_name: formData.get("first_name"),
-            last_name: formData.get("last_name"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            date: selectedDate,
-            time: selectedSlot,
-            services: selectedServices.map(s => s.id),
-            duration: totalDuration
-        };
-
-        fetch('/wp-json/youbookpro/v1/reserve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clientData)
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert('Réservation confirmée !');
-            setStep(1);
-            setSelectedServices([]);
-            setSelectedSlot(null);
-            setSelectedDate(null);
-        })
-        .catch(error => {
-            console.error("Erreur lors de la réservation :", error);
-            alert("Erreur lors de la réservation.");
-        });
-    };
-    const generateAvailableSlots = (reservations) => {
-        const opening = 10 * 60;    
-        const closing = 18 * 60;  
-        const interval = 30;      
-        const durationNeeded = totalDuration; 
-
-        const slots = [];
-
-        for (let t = opening; t <= closing - durationNeeded; t += interval) {
-            const slotStart = t;
-            const slotEnd = t + durationNeeded;
-
-            if (slotEnd > closing) {
-                continue;
-            }
-
-            const overlap = reservations.some(r => {
-                return (slotStart < r.end && slotEnd > r.start);
-            });
-
-            if (!overlap) {
-                slots.push(minutesToTime(slotStart));
-            }
-        }
-
-        setAvailableSlots(slots);
-    };
-
-    const fetchReservedSlots = (date) => {
-        // Vérifie si la date est désactivée
-        if (disabledDates.includes(date)) {
-            console.log("Date désactivée, pas de fetch :", date);
-            setReservedSlots([]);
-            setReservations([]);
-            generateAvailableSlots([]); // Vide aussi les créneaux
-            return;
-        } else {
-            console.log("Date activé, fetch :", date);
-            fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
-                .then(res => res.json())
-                .then(data => {
-                    setReservedSlots(data.map(r => r.time));
-                    setReservations(data);
-
-                    const transformed = data.map(r => {
-                        const start = parseTime(r.time);
-                        const end = start + parseInt(r.duration);
-                        return { start, end };
-                    });
-
-                generateAvailableSlots(transformed);
-            });
-        }
-    };
-
-
-
-    const toggleService = (service) => {
-        setSelectedServices(prev => {
-            const exists = prev.find(s => s.id === service.id);
-            if (exists) {
-                setError(null); 
-                return prev.filter(s => s.id !== service.id);
-            } else {
-                if (prev.length >= 2) {
-                    setError("Vous pouvez sélectionner jusqu'à 2 services maximum.");
-                    return prev;
-                }
-                setError(null); 
-                return [...prev, service];
-            }
-        });
-    };
-
-
-    useEffect(() => {
-        fetch('/wp-json/youbookpro/v1/reservations')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors du chargement des réservations');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setReservations(data);
-            })
-            .catch(error => {
-                console.error('Erreur fetch réservations:', error);
-            });
-    }, []);
-
+    
     useEffect(() => {
         fetch('/wp-json/youbookpro/v1/services')
             .then(response => {
@@ -153,211 +40,175 @@ function BookingBlock() {
             })
             .catch(error => {
                 console.error('Erreur lors du chargement des services:', error);
+                setError('Impossible de charger les services.'); 
                 setLoading(false);
             });
     }, []);
+    
+    const fetchReservedSlots = (date) => {
+        if (disabledDates.includes(date)) {
+            console.log("Date désactivée, pas de fetch :", date);
+            
+            setReservations([]);
+            setAvailableSlots([]); 
+            return;
+        } else {
+            console.log("Date activé, fetch :", date);
+            fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
+                .then(res => {
+                     if (!res.ok) {
+                        throw new Error('Erreur lors du chargement des réservations pour cette date');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setReservations(data); 
+                    const transformed = data.map(r => ({
+                         start: parseTime(r.time),
+                         end: parseTime(r.time) + parseInt(r.duration)
+                    }));
+                    
+                    const slots = computeAvailableSlots(transformed, totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES);
+                    setAvailableSlots(slots.map(minutesToTime)); 
+                })
+                .catch(error => {
+                    console.error("Erreur lors du fetch des réservations :", error);
+                    setError("Erreur lors du chargement des créneaux."); 
+                    setReservations([]);
+                    setAvailableSlots([]);
+                });
+        }
+    };
 
+    
+    const toggleService = (service) => {
+        setSelectedServices(prev => {
+            const exists = prev.find(s => s.id === service.id);
+            if (exists) {
+                setError(null);
+                return prev.filter(s => s.id !== service.id);
+            } else {
+                if (prev.length >= 2) {
+                    setError("Vous pouvez sélectionner jusqu'à 2 services maximum.");
+                    return prev;
+                }
+                setError(null);
+                return [...prev, service];
+            }
+        });
+    };
+
+    
+    
+    const handleSubmit = async (clientData) => {
+        try {
+            const res = await fetch('/wp-json/youbookpro/v1/reserve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(clientData)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || 'Erreur lors de la réservation');
+            }
+
+            const data = await res.json();
+            
+            setStep(1);
+            setSelectedServices([]);
+            setSelectedSlot(null);
+            setSelectedDate(null);
+            setReservations([]); 
+            setAvailableSlots([]); 
+            
+            return data; 
+
+        } catch (error) {
+            console.error("Erreur lors de la réservation (dans BookingBlock) :", error);
+            
+            throw error;
+        }
+    };
+
+
+    
     useEffect(() => {
-    if (error) {
-        const timer = setTimeout(() => setError(null), 3000); 
-        return () => clearTimeout(timer);
-    }
+        if (error) {
+            const timer = setTimeout(() => setError(null), 5000); 
+            return () => clearTimeout(timer);
+        }
     }, [error]);
+
 
     return (
         <div className="youbookpro-booking">
 
             {step === 1 && (
-                <div className="services-section">
-                    {loading ? (
-                        <p>Chargement des services...</p>
-                    ) : (
-                        Object.entries(groupServicesByCategory(services)).map(([category, categoryServices]) => (
-                            <div key={category} className="category-block">
-                                <h4 className="category-title">{decodeHTMLEntities(category)}</h4>
-                                <table className="category-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Nom</th>
-                                            <th>Prix</th>
-                                            <th>Durée</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {categoryServices.map(service => (
-                                            <tr key={service.id}>
-                                                <td>{decodeHTMLEntities(service.title)}</td>
-                                                <td>{service.price} €</td>
-                                                <td>{service.duration} min</td>
-                                                <td>
-                                                    <button onClick={() => toggleService(service)}>
-                                                        {selectedServices.find(s => s.id === service.id) ? 'Retirer' : 'Sélectionner'}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ))
-                    )}
-                    {error && (
-                        <div className="error-popup">
-                            {error}
-                        </div>
-                    )}
-                    {selectedServices.length > 0 && (
-                        <div className="next-step-bar centered">
-                            <div>
-                                <strong>{selectedServices.length}</strong> service(s) sélectionné(s) – 
-                                <strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0)} €</strong>
-                            </div>
-                            <button onClick={() => setStep(2)}>Choisir un créneau →</button>
-                        </div>
-                    )}
-                </div>
-                
+                <ServiceSelection
+                    services={services}
+                    selectedServices={selectedServices}
+                    toggleService={toggleService}
+                    error={error} 
+                    onNextStep={() => {
+                        if (selectedServices.length > 0) {
+                            setStep(2);
+                            setError(null); 
+                        } else {
+                            setError("Veuillez sélectionner au moins un service.");
+                        }
+                    }}
+                />
             )}
+
             {step === 2 && (
-                <div className="slots-section">
-                    <h3>Créneaux disponibles pour :</h3>
-                    <ul>
-                        {selectedServices.map(service => (
-                            <li key={service.id}>{decodeHTMLEntities(service.title)} - {service.duration} min</li>
-                        ))}
-                    </ul>
-                    <h3>Choisissez un jour :</h3>
-
-                    <WeekSelector 
-                        onDisabledDatesFetched={(disabledDates) => {
-                            console.log("Dates désactivées :", disabledDates);
-                            setDisabledDatesGlobal(disabledDates);
-                        }}
-                        onDateSelected={(dateStr) => {
-                            setSelectedDate(dateStr);
-                            fetchReservedSlots(dateStr);
-                            }}
-
-                        totalDuration={totalDuration}
-                    />
-
-                    {selectedDate && (
-                    <div>
-                        <h4>Créneaux disponibles pour le {selectedDate}</h4>
-                        {availableSlots.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
-                            {availableSlots.map(slot => (
-                            <button
-                                key={slot}
-                                className={`slot-btn-vertical ${selectedSlot === slot ? 'selected' : ''}`}
-                                onClick={() => setSelectedSlot(slot)}
-                            >
-                                {slot}
-                            </button>
-                            ))}
-                        </div>
-                        ) : (
-                        <p>Aucun créneau disponible.</p>
-                        )}
-                    </div>
-                    )}
-                    {selectedSlot && (
-                        <div className="next-step-bar centered">
-                            <div><strong>Créneau sélectionné :</strong> {selectedSlot}</div>
-                            <button onClick={() => setStep(3)}>Passer à l’étape suivante →</button>
-                        </div>
-                    )}
-                    <button onClick={() => setStep(1)}>Retour</button>
-                </div>
+                <SlotSelection
+                    selectedServices={selectedServices}
+                    totalDuration={totalDuration}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    reservations={reservations} 
+                    
+                    availableSlots={availableSlots}
+                    setAvailableSlots={setAvailableSlots} 
+                    selectedSlot={selectedSlot}
+                    setSelectedSlot={setSelectedSlot}
+                    disabledDates={disabledDates}
+                    setDisabledDatesGlobal={setDisabledDatesGlobal} 
+                    fetchReservedSlots={fetchReservedSlots} 
+                    onNextStep={() => {
+                        if (selectedSlot) {
+                            setStep(3);
+                            setError(null); 
+                        } else {
+                             setError("Veuillez sélectionner un créneau horaire.");
+                        }
+                    }}
+                    onPrevStep={() => {
+                        setStep(1);
+                        setError(null); 
+                    }}
+                    error={error} 
+                />
             )}
 
             {step === 3 && (
-                <div className="confirmation-section">
-                    <h3>Confirmation de la réservation</h3>
-                    <p><strong>Date :</strong> {selectedDate}</p>
-                    <p><strong>Heure :</strong> {selectedSlot}</p>
-                    <ul>
-                        {selectedServices.map(service => (
-                            <li key={service.id}>{decodeHTMLEntities(service.title)} – {service.duration} min</li>
-                        ))}
-                    </ul>
-                    <p><strong>Durée totale :</strong> {totalDuration} min</p>
-                    <p><strong>Montant total :</strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0)} €</p>
-
-                    <form onSubmit={handleSubmit}>
-                        <input type="text" placeholder="Prénom" name="first_name" required />
-                        <input type="text" placeholder="Nom" name="last_name" required />
-                        <input type="email" placeholder="Email" name="email" required />
-                        <input type="tel" placeholder="Téléphone" name="phone" required />
-                        <button type="submit">Confirmer la réservation</button>
-                    </form>
-
-                    <button onClick={() => setStep(2)}>← Retour au créneau</button>
-                </div>
+                <ConfirmationForm
+                    selectedDate={selectedDate}
+                    selectedSlot={selectedSlot}
+                    selectedServices={selectedServices}
+                    totalDuration={totalDuration}
+                    onSubmit={handleSubmit} 
+                    onPrevStep={() => {
+                        setStep(2);
+                        setError(null); 
+                    }}
+                    error={error} 
+                />
             )}
         </div>
     );
-
 }
-
-function groupServicesByCategory(services) {
-    return services.reduce((acc, service) => {
-        const category = service.category?.name || 'Autres';
-        if (!acc[category]) {
-            acc[category] = [];
-        }
-        acc[category].push(service);
-        return acc;
-    }, {});
-}
-
-function decodeHTMLEntities(text) {
-    const txt = document.createElement('textarea');
-    txt.innerHTML = text;
-    return txt.value;
-}
-
-function parseTime(timeStr) {
-    const [h, m] = timeStr.split(':').map(Number);
-    return h * 60 + m;
-}
-
-function minutesToTime(minutes) {
-    const h = Math.floor(minutes / 60).toString().padStart(2, '0');
-    const m = (minutes % 60).toString().padStart(2, '0');
-    return `${h}:${m}`;
-}
-function computeAvailableSlotsLocally(reservations, totalDuration) {
-    const openingHour = 10;
-    const closingHour = 18;
-    const interval = 30;
-
-    const openingMinutes = openingHour * 60;
-    const closingMinutes = closingHour * 60;
-    
-    const allSlots = [];
-    for (let time = openingMinutes; time <= closingMinutes - totalDuration; time += interval) {
-        allSlots.push(time);
-    }
-
-    const reservedRanges = reservations.map(res => {
-        const [h, m] = res.time.split(':').map(Number);
-        const start = h * 60 + m;
-        const end = start + parseInt(res.duration);
-        return { start, end };
-    });
-
-    const available = allSlots.filter(slot => {
-        const slotEnd = slot + totalDuration;
-        return !reservedRanges.some(res => 
-            (slot < res.end && slotEnd > res.start) // chevauchement
-        );
-    });
-    console.log(reservations, "- slots disponible :", available);
-    return available;
-}
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -368,133 +219,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-export default function WeekSelector({ onDateSelected, totalDuration, onDisabledDatesFetched}) {
-    const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [weekDates, setWeekDates] = useState([]);
-    const [disabledDates, setDisabledDates] = useState([]);
-
-    const isToday = (date) => {
-        const today = new Date();
-        return (
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
-        );
-    };
-
-    const disablePrevWeek = weekDates.some(date => isToday(date));
-
-    useEffect(() => {
-        const fetchDisabledDates = async () => {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const response = await fetch(`/wp-json/youbookpro/v1/reservations/from?from=${today}`);
-                const reservations = await response.json();
-
-                const groupedByDate = {};
-                reservations.forEach(res => {
-                    if (!groupedByDate[res.date]) {
-                        groupedByDate[res.date] = [];
-                    }
-                    groupedByDate[res.date].push(res);
-                });
-
-                const fullDates = Object.entries(groupedByDate).filter(([date, dayReservations]) => {
-                    const available = computeAvailableSlotsLocally(dayReservations, totalDuration);
-                    return available.length === 0;
-                }).map(([date]) => date);
-
-                const sundays = [];
-                const date = new Date();
-                for (let i = 0; i < 30; i++) {
-                    const checkDate = new Date(date);
-                    checkDate.setDate(date.getDate() + i);
-                    if (checkDate.getDay() === 0) { // 0 = dimanche
-                        sundays.push(checkDate.toISOString().split('T')[0]);
-                    }
-                }
-
-                const allDisabled = Array.from(new Set([...fullDates, ...sundays]));
-
-                setDisabledDates(allDisabled);
-                onDisabledDatesFetched?.(allDisabled);
-
-            } catch (error) {
-                console.error('Erreur lors de la récupération des dates désactivées:', error);
-            }
-        };
-
-        fetchDisabledDates();
-    }, []);
-
-    useEffect(() => {
-        setWeekDates(generateWeekDays(currentWeekStart));
-    }, [currentWeekStart]);
-
-    useEffect(() => {
-        const formatted = selectedDate.toISOString().split('T')[0];
-        onDateSelected(formatted);
-    }, []);
-
-    const handleDayClick = (date) => {
-        if (date.getDay() === 0) return;
-        setSelectedDate(date);
-        const formatted = date.toISOString().split('T')[0];
-        onDateSelected(formatted);
-    };
-    
-    return (
-        <div className="week-selector">
-            <button
-                onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
-                disabled={disablePrevWeek}
-                style={{ opacity: disablePrevWeek ? 0.3 : 1, cursor: disablePrevWeek ? 'not-allowed' : 'pointer' }}
-                title={disablePrevWeek ? "Impossible de revenir avant cette semaine" : "Semaine précédente"}
-            >
-                &lt;
-            </button>
-
-            <div className="week-days">
-                {weekDates.map(date => {
-                    const day = date.getDate();
-                    const isSelected = selectedDate?.toDateString() === date.toDateString();
-                    const isSunday = date.getDay() === 0;
-                    const formattedDate = date.toISOString().split('T')[0];
-                    const isDisabled = isSunday || disabledDates.includes(formattedDate);
-
-                    return (
-                        <button
-                            key={formattedDate}
-                            disabled={isDisabled}
-                            className={`day-btn ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
-                            onClick={() => handleDayClick(date)}
-                            title={isDisabled ? "Jour indisponible" : ""}
-                        >
-                            {day}
-                        </button>
-                    );
-                })}
-            </div>
-
-            <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}>&gt;</button>
-        </div>
-    );
-}
-
-
-function addDays(date, days) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-
-function generateWeekDays(startDate) {
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(startDate);
-        d.setDate(d.getDate() + i);
-        days.push(d);
-    }
-    return days;
-}
+export default BookingBlock; 
