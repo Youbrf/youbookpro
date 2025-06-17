@@ -40,9 +40,12 @@ export function computeAvailableSlots(reservations, totalDuration, openingMinute
 
     const available = allSlots.filter(slot => {
         const slotEnd = slot + totalDuration;
-        return !reservedRanges.some(res =>
-            (slot < res.end && slotEnd > res.start) 
+        const overlaps = reservedRanges.some(res =>
+            slot < res.end && slotEnd > res.start
         );
+
+        console.log(`${minutesToTime(slot)} - ${minutesToTime(slotEnd)} => ${overlaps ? "❌ pris" : "✅ libre"}`);
+        return !overlaps;
     });
 
     return available;
