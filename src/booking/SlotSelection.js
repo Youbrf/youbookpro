@@ -27,6 +27,7 @@ const SlotSelection = ({
             <h3>Choisissez un jour :</h3>
             <WeekSelector
                 setAvailableSlots={setAvailableSlots}
+                selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
                 totalDuration={totalDuration}
             />

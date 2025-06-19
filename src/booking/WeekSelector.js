@@ -126,16 +126,20 @@ function WeekSelector({
             <div className="week-days">
                 {weekDates.map((date) => {
                     const day = date.getDate();
-                    const isSelected = selectedDate?.toDateString() === date.toDateString();
-                    const isSunday = date.getDay() === 0;
                     const formattedDate = date.toISOString().split('T')[0];
+                    const isSelected = selectedDate === formattedDate;
+                    console.log(isSelected, "selectedate", typeof selectedDate, selectedDate,"day", formattedDate, "non format ", date);
+
+                    //const isSelected = selectedDate?.toDateString() === date.toDateString();
+                    const isSunday = date.getDay() === 0;
+                    //const formattedDate = date.toISOString().split('T')[0];
                     const isDisabled = isSunday || disabledDates.includes(formattedDate);
 
                     return (
                         <button
                             key={formattedDate}
                             disabled={isDisabled}
-                            className={`day-btn ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                            className={`day-btn ${isDisabled ? 'disabled' : isSelected ? 'selected' : 'normal'}`}
                             onClick={() => handleDayClick(date)}
                             title={isDisabled ? "Jour indisponible" : ""}
                         >

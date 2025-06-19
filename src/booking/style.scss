@@ -191,42 +191,57 @@
 }
 
 .day-btn {
-    padding: 10px 15px; 
-    border: 1px solid #ced4da; 
-    border-radius: 20px; 
-    background: white;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    font-size: 1rem;
-    min-width: 40px; 
-    text-align: center;
+  padding: 12px 18px;
+  border: 2px solid #CD5C5C;
+  border-radius: 24px;
+  background: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+  min-width: 44px;
+  text-align: center;
+  font-weight: 500;
+  color: #212121;
+  user-select: none;
+  box-shadow: none;
 }
 
 .day-btn:hover:not(:disabled):not(.selected) {
-    background: #e9ecef; 
-    border-color: #adb5bd;
+  background-color: #E68787;
+  border-color: #CD5C5C;
+  box-shadow: 0 2px 6px rgba(205, 92, 92, 0.4);
+  color: #212121;
 }
 
 .day-btn.selected {
-    background: #007bff; 
-    color: white;
-    border-color: #007bff;
-    font-weight: bold;
+  background-color: #A94B4B;
+  color: #FFFFFF;
+  border-color: #A94B4B;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(169, 75, 75, 0.8);
 }
+
 .day-btn.disabled {
-    background-color: #e9ecef; 
-    color: #adb5bd; 
-    border-color: #ced4da;
-    cursor: not-allowed;
-    opacity: 0.6; 
+  background-color: #F0CACA;
+  color: #A94B4B;
+  border-color: #F0CACA;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
 }
-.day-btn.reserved {
-    background-color: #ffc107; 
-    color: #343a40; 
-    font-weight: bold;
-    cursor: not-allowed;
-    border-color: #ffc107;
+
+.day-btn.normal {
+  background-color: #fff;
+  color: #212121;
 }
+
+/* Focus visible pour accessibilité */
+.day-btn:focus-visible {
+  outline: 3px solid #CD5C5C;
+  outline-offset: 2px;
+  box-shadow: 0 0 8px rgba(205, 92, 92, 0.7);
+}
+
 
 
 .slot-btn-vertical {
