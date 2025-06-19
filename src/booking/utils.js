@@ -26,26 +26,41 @@ export function minutesToTime(minutes) {
     return `${h}:${m}`;
 }
 
-export function computeAvailableSlots(reservations, totalDuration, openingMinutes, closingMinutes, interval) {
-    const allSlots = [];
-    for (let time = openingMinutes; time <= closingMinutes - totalDuration; time += interval) {
-        allSlots.push(time);
+export function computeAvailableSlots(
+    reservations, 
+    totalDuration, 
+    openingMinutes, 
+    closingMinutes, 
+    interval,
+    checkDate) 
+    {
+        const allSlots = [];
+        for (let time = openingMinutes; time <= closingMinutes - totalDuration; time += interval) {
+            allSlots.push(time);
+        }
+        const reservedRanges = reservations.map(res => {
+            const start = parseTime(res.time);
+            const end = start + parseInt(res.duration);
+            return { start, end };
+        });
+
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const isToday = checkDate === todayStr;
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+        const available = allSlots.filter(slot => {
+            const slotEnd = slot + totalDuration;
+            if (isToday && slot <= currentMinutes) {
+                return false;
+            }
+            return !reservedRanges.some(res =>
+                (slot < res.end && slotEnd > res.start) 
+            );
+        });
+
+        return available.map(minutesToTime);
     }
-
-    const reservedRanges = reservations.map(res => {
-        const start = parseTime(res.time);
-        const end = start + parseInt(res.duration);
-        return { start, end };
-    });
-
-    const available = allSlots.filter(slot => {
-        const slotEnd = slot + totalDuration;
-        return !reservedRanges.some(res =>
-            (slot < res.end && slotEnd > res.start) 
-        );
-    });
-    return available.map(minutesToTime);
-}
 
 export async function fetchReservationsByDate(date) {
     try {

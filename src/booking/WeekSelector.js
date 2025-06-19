@@ -60,7 +60,7 @@ function WeekSelector({
                 });
 
                 const fullDates = Object.entries(groupedByDate).filter(([date, dayReservations]) => {
-                    const available = computeAvailableSlots(dayReservations, totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES);
+                    const available = computeAvailableSlots(dayReservations, totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES, dayReservations.date);
                     return available.length === 0;
                 }).map(([date]) => date);
 
@@ -77,7 +77,9 @@ function WeekSelector({
                 const allDisabled = Array.from(new Set([...fullDates, ...sundays]));
 
                 setDisabledDates(allDisabled);
-                setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(today),totalDuration,OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES));
+                if (!allDisabled.includes(today)) {
+                    setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(today),totalDuration,OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES, today));
+                }
 
             } catch (error) {
                 console.error('Erreur lors de la récupération des dates désactivées:', error);
@@ -102,7 +104,7 @@ function WeekSelector({
         const formattedDate = date.toISOString().split('T')[0];
         if (disabledDates.includes(formattedDate)) return;
         setSelectedDate(formattedDate);
-        setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(formattedDate), totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES));
+        setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(formattedDate), totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES, formattedDate));
     };
 
     return (
@@ -128,11 +130,7 @@ function WeekSelector({
                     const day = date.getDate();
                     const formattedDate = date.toISOString().split('T')[0];
                     const isSelected = selectedDate === formattedDate;
-                    console.log(isSelected, "selectedate", typeof selectedDate, selectedDate,"day", formattedDate, "non format ", date);
-
-                    //const isSelected = selectedDate?.toDateString() === date.toDateString();
                     const isSunday = date.getDay() === 0;
-                    //const formattedDate = date.toISOString().split('T')[0];
                     const isDisabled = isSunday || disabledDates.includes(formattedDate);
 
                     return (

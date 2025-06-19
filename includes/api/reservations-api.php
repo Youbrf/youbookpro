@@ -32,13 +32,15 @@ function youbookpro_get_reservations(WP_REST_Request $request) {
 
     foreach ($query->posts as $post) {
         $reservation_id = $post->ID;
+        $res_date      = get_post_meta($reservation_id, '_youbook_reservation_date', true);
         $duration = get_post_meta($reservation_id, '_youbook_reservation_duration', true);
         $time     = get_post_meta($reservation_id, '_youbook_reservation_time', true);
 
         $reservations[] = [
             'id'       => $reservation_id,
+            'date'     => $res_date,
             'time'     => $time,
-            'duration' => intval($duration), // on force en int pour les calculs
+            'duration' => intval($duration),
         ];
     }
 
