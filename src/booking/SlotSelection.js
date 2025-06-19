@@ -10,7 +10,6 @@ const SlotSelection = ({
     setAvailableSlots,
     selectedSlot,
     setSelectedSlot,
-    fetchReservedSlots,
     onNextStep,
     onPrevStep,
     error
@@ -27,12 +26,8 @@ const SlotSelection = ({
 
             <h3>Choisissez un jour :</h3>
             <WeekSelector
+                setAvailableSlots={setAvailableSlots}
                 setSelectedDate={setSelectedDate}
-                onDateSelected={(dateStr) => {
-                    setSelectedDate(dateStr);
-                    fetchReservedSlots(dateStr);
-                    setSelectedSlot(null);
-                }}
                 totalDuration={totalDuration}
             />
 

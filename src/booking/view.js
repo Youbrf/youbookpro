@@ -4,15 +4,6 @@ import ServiceSelection from './ServiceSelection';
 import SlotSelection from './SlotSelection';     
 import ConfirmationForm from './ConfirmationForm'; 
 
-import {
-    parseTime,
-    minutesToTime,
-    computeAvailableSlots,
-    OPENING_HOUR_MINUTES,
-    CLOSING_HOUR_MINUTES,
-    SLOT_INTERVAL_MINUTES
-} from './utils';
-
 function BookingBlock() {
     const [step, setStep] = useState(1);
     const [selectedServices, setSelectedServices] = useState([]);
@@ -44,43 +35,7 @@ function BookingBlock() {
                 setLoading(false);
             });
     }, []);
-    
-    const fetchReservedSlots = (date) => {
-        if (disabledDates.includes(date)) {
-            console.log("Date désactivée, pas de fetch :", date);
-            
-            setReservations([]);
-            setAvailableSlots([]); 
-            return;
-        } else {
-            console.log("Date activé, fetch :", date);
-            fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`)
-                .then(res => {
-                     if (!res.ok) {
-                        throw new Error('Erreur lors du chargement des réservations pour cette date');
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    setReservations(data); 
-                    const transformed = data.map(r => ({
-                         start: parseTime(r.time),
-                         end: parseTime(r.time) + parseInt(r.duration)
-                    }));
-                    
-                    const slots = computeAvailableSlots(transformed, totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES);
-                    setAvailableSlots(slots.map(minutesToTime)); 
-                })
-                .catch(error => {
-                    console.error("Erreur lors du fetch des réservations :", error);
-                    setError("Erreur lors du chargement des créneaux."); 
-                    setReservations([]);
-                    setAvailableSlots([]);
-                });
-        }
-    };
-
-    
+        
     const toggleService = (service) => {
         setSelectedServices(prev => {
             const exists = prev.find(s => s.id === service.id);
@@ -175,7 +130,6 @@ function BookingBlock() {
                     setSelectedSlot={setSelectedSlot}
                     disabledDates={disabledDates}
                     setDisabledDatesGlobal={setDisabledDatesGlobal} 
-                    fetchReservedSlots={fetchReservedSlots} 
                     onNextStep={() => {
                         if (selectedSlot) {
                             setStep(3);

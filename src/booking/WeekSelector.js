@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     computeAvailableSlots,
+    fetchReservationsByDate,
     OPENING_HOUR_MINUTES,
     CLOSING_HOUR_MINUTES,
     SLOT_INTERVAL_MINUTES
@@ -22,7 +23,12 @@ function generateWeekDays(startDate) {
     return days;
 }
 
-function WeekSelector({ onDateSelected, totalDuration, onDisabledDatesFetched, selectedDate, setSelectedDate }) {
+function WeekSelector({ 
+    totalDuration,
+    selectedDate, 
+    setSelectedDate,
+    setAvailableSlots,
+}) {
     const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
     const [weekDates, setWeekDates] = useState([]);
     const [disabledDates, setDisabledDates] = useState([]);
@@ -71,7 +77,7 @@ function WeekSelector({ onDateSelected, totalDuration, onDisabledDatesFetched, s
                 const allDisabled = Array.from(new Set([...fullDates, ...sundays]));
 
                 setDisabledDates(allDisabled);
-                onDisabledDatesFetched?.(allDisabled);
+                setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(today),totalDuration,OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES));
 
             } catch (error) {
                 console.error('Erreur lors de la récupération des dates désactivées:', error);
@@ -88,17 +94,15 @@ function WeekSelector({ onDateSelected, totalDuration, onDisabledDatesFetched, s
     useEffect(() => {
         const today = new Date();
         const formatted = today.toISOString().split('T')[0];
-        setSelectedDate(today); 
-        onDateSelected(formatted); 
+        setSelectedDate(formatted); 
     }, []);
 
-    const handleDayClick = (date) => {
+    const handleDayClick = async (date) => {
         if (date.getDay() === 0) return;
         const formattedDate = date.toISOString().split('T')[0];
         if (disabledDates.includes(formattedDate)) return;
-
-        setSelectedDate(date);
-        onDateSelected(formattedDate);
+        setSelectedDate(formattedDate);
+        setAvailableSlots(computeAvailableSlots( await fetchReservationsByDate(formattedDate), totalDuration, OPENING_HOUR_MINUTES, CLOSING_HOUR_MINUTES, SLOT_INTERVAL_MINUTES));
     };
 
     return (

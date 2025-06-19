@@ -40,15 +40,22 @@ export function computeAvailableSlots(reservations, totalDuration, openingMinute
 
     const available = allSlots.filter(slot => {
         const slotEnd = slot + totalDuration;
-        const overlaps = reservedRanges.some(res =>
-            slot < res.end && slotEnd > res.start
+        return !reservedRanges.some(res =>
+            (slot < res.end && slotEnd > res.start) 
         );
-
-        console.log(`${minutesToTime(slot)} - ${minutesToTime(slotEnd)} => ${overlaps ? "❌ pris" : "✅ libre"}`);
-        return !overlaps;
     });
+    return available.map(minutesToTime);
+}
 
-    return available;
+export async function fetchReservationsByDate(date) {
+    try {
+        const response = await fetch(`/wp-json/youbookpro/v1/reservations?date=${date}`);
+        const reservations = await response.json();
+        return reservations;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des réservations :', error);
+        return [];
+    }
 }
 
 export const OPENING_HOUR_MINUTES = 10 * 60;
