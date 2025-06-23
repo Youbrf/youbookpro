@@ -5,7 +5,7 @@ import {
     OPENING_HOUR_MINUTES,
     CLOSING_HOUR_MINUTES,
     SLOT_INTERVAL_MINUTES
-} from './utils';
+} from '../utils';
 
 function addDays(date, days) {
     const result = new Date(date);

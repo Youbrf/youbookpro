@@ -1,5 +1,5 @@
 import React from 'react';
-import { groupServicesByCategory, decodeHTMLEntities } from './utils';
+import { groupServicesByCategory, decodeHTMLEntities } from '../utils';
 
 function ServiceSelection({ services, selectedServices, toggleService, error, onNextStep }) {
     const loading = services.length === 0 && !error; 

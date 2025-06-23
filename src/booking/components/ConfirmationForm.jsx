@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { decodeHTMLEntities } from './utils';
+import { decodeHTMLEntities } from '../utils';
 
 function ConfirmationForm({
     selectedDate,

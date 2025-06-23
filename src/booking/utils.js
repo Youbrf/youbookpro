@@ -1,3 +1,9 @@
+export async function fetchServices() {
+  const res = await fetch('/wp-json/youbookpro/v1/services');
+  if (!res.ok) throw new Error('Erreur chargement services');
+  return res.json();
+}
+
 export function groupServicesByCategory(services) {
     return services.reduce((acc, service) => {
         const category = service.category?.name || 'Autres';
