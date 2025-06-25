@@ -4,8 +4,10 @@ import BookingBlock from './components/BookingBlock';
 import './editor.scss';
 
 export default function Edit() {
+	const blockProps = useBlockProps();
+
 	return (
-		<div {...useBlockProps()}>
+		<div {...blockProps}>
 			<BookingBlock />
 		</div>
 	);

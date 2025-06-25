@@ -14,7 +14,18 @@ return array(
 			
 		),
 		'supports' => array(
-			'html' => false
+			'color' => array(
+				'text' => true,
+				'background' => true
+			),
+			'typography' => array(
+				'fontSize' => true,
+				'lineHeight' => true
+			),
+			'spacing' => array(
+				'padding' => true,
+				'margin' => true
+			)
 		),
 		'textdomain' => 'booking',
 		'editorScript' => 'file:./index.js',

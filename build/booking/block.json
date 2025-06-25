@@ -9,7 +9,18 @@
   "description": "Bloc de réservation de services via YouBookPro",
   "example": {},
   "supports": {
-    "html": false
+    "color": {
+      "text": true,
+      "background": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
   },
   "textdomain": "booking",
   "editorScript": "file:./index.js",
