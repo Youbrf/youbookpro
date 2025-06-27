@@ -13,6 +13,24 @@ return array(
 		'example' => array(
 			
 		),
+		'attributes' => array(
+			'buttonColor' => array(
+				'type' => 'string',
+				'default' => 'black'
+			),
+			'buttonTextColor' => array(
+				'type' => 'string',
+				'default' => 'white'
+			),
+			'buttonHoverColor' => array(
+				'type' => 'string',
+				'default' => '#333333'
+			),
+			'buttonHoverTextColor' => array(
+				'type' => 'string',
+				'default' => 'white'
+			)
+		),
 		'supports' => array(
 			'color' => array(
 				'text' => true,

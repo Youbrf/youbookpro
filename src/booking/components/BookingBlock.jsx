@@ -5,7 +5,13 @@ import SlotSelection from './SlotSelection';
 import ConfirmationForm from './ConfirmationForm';
 import { fetchServices } from '../utils';
 
-function BookingBlock() {
+function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHoverTextColor }) {
+    const style = {
+        '--button-bg-color': buttonColor || '#000000',
+        '--button-text-color': buttonTextColor || '#ffffff',
+        '--button-hover-bg-color': buttonHoverColor || '#333333',
+        '--button-hover-text-color': buttonHoverTextColor || '#ffffff',
+    };
     const [step, setStep] = useState(1);
     const [selectedServices, setSelectedServices] = useState([]);
     const [services, setServices] = useState([]);
@@ -88,14 +94,14 @@ function BookingBlock() {
 
 
     return (
-        <div className="youbookpro-booking">
+        <div className="youbookpro-booking" style={style}>
 
             {step === 1 && (
                 <ServiceSelection
                     services={services}
                     selectedServices={selectedServices}
                     toggleService={toggleService}
-                    error={error} 
+                    error={error}
                     onNextStep={() => {
                         if (selectedServices.length > 0) {
                             setStep(2);

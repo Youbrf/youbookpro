@@ -54,18 +54,19 @@
 			}
 
 			button {
-				background-color: #000000;
-				color: white;
-				border: none;
-				padding: 0.5rem 1rem;
-				border-radius: 5px;
-				cursor: pointer;
-				transition: background-color 0.2s ease;
-				text-transform: uppercase;
+			background-color: var(--button-bg-color, #000000);
+			color: var(--button-text-color, #ffffff);
+			border: none;
+			padding: 0.5rem 1rem;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.2s ease, color 0.2s ease;
+			text-transform: uppercase;
+			}
 
-				&:hover {
-					background-color: #484849;
-				}
+			button:hover {
+			background-color: var(--button-hover-bg-color, #333333);
+			color: var(--button-hover-text-color, #ffffff);
 			}
 		}
 	}
@@ -89,18 +90,19 @@
     text-transform: capitalize;
 
 	button {
-		background-color: #000000;
-		color: white;
-		border: none;
-		padding: 0.6rem 1.2rem;
-		border-radius: 5px;
-		cursor: pointer;
-		font-weight: bold;
-		transition: background-color 0.2s ease;
+	background-color: var(--button-bg-color, #000000);
+	color: var(--button-text-color, #ffffff);
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	text-transform: uppercase;
+	}
 
-		&:hover {
-			background-color: #484849;
-		}
+	button:hover {
+	background-color: var(--button-hover-bg-color, #333333);
+	color: var(--button-hover-text-color, #ffffff);
 	}
 }
 
@@ -147,8 +149,8 @@
 		}
 
 		.right-button button {
-			background-color: #000;
-			color: #fff;
+			background-color: var(--button-bg-color, #000000);
+			color: var(--button-text-color, #ffffff);
 			border: none;
 			padding: 0.4rem 0.8rem;
 			border-radius: 4px;
@@ -158,7 +160,10 @@
 			&:hover {
 				background-color: #484849;
 			}
-            
+		}
+		.right-button button:hover {
+			background-color: var(--button-hover-bg-color, #333333);
+			color: var(--button-hover-text-color, #ffffff);
 		}
 	}
 }

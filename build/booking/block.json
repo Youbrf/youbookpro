@@ -8,6 +8,24 @@
   "icon": "calendar-alt",
   "description": "Bloc de réservation de services via YouBookPro",
   "example": {},
+  "attributes": {
+    "buttonColor": {
+      "type": "string",
+      "default": "black"
+    },
+    "buttonTextColor": {
+      "type": "string",
+      "default": "white"
+    },
+    "buttonHoverColor": {
+      "type": "string",
+      "default": "#333333"
+    },
+    "buttonHoverTextColor": {
+      "type": "string",
+      "default": "white"
+    }
+  },
   "supports": {
     "color": {
       "text": true,
