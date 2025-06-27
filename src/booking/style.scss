@@ -190,3 +190,231 @@
 		}
 	}
 }
+
+.slots-section {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+
+  .slots-container {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .slots-left {
+    flex: 2;
+  }
+
+  .slots-right {
+    flex: 1;
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 8px;
+	height: fit-content;
+
+	h6 {
+	  text-align: center;	
+	}
+
+    ul {
+	  font-size: 0.9rem;
+      list-style: none;
+      padding: 0;
+
+      li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #ddd;
+        text-transform: capitalize;
+      }
+    }
+  }
+
+  .slots-list {
+    display: flex;
+    flex-direction: column;
+
+    .slot-btn-vertical {
+      background-color: var(--button-bg-color, #000);
+      color: var(--button-text-color, #fff);
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.2s ease;
+
+      &.selected {
+        background-color: var(--button-hover-bg-color, #333);
+      }
+
+      &:hover:not(.selected) {
+        background-color: #555;
+      }
+    }
+  }
+
+  .next-step-bar {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    border-top: 4px solid #000;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+
+    button {
+      background-color: var(--button-bg-color, #000);
+      color: var(--button-text-color, #fff);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--button-hover-bg-color, #333);
+      }
+    }
+  }
+
+  button {
+    margin-top: 0.2rem;
+    background-color: var(--button-bg-color, #000);
+    color: var(--button-text-color, #fff);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--button-hover-bg-color, #333);
+    }
+  }
+}
+
+/* MEDIA QUERY : mobile */
+@media (max-width: 768px) {
+  .slots-section {
+    padding: 1rem;
+
+    .slots-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .slots-list {
+      .slot-btn-vertical {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+
+    .next-step-bar {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem 0;
+      button {
+        width: 100%;
+      }
+    }
+
+    button {
+      width: 80%;
+	  margin-top: 0.1rem;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+  }
+}
+
+
+.week-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem auto;
+
+  button {
+    all: unset;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.3;
+    }
+  }
+
+  .week-days {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .day-btn {
+    background-color: var(--button-bg-color, #000);
+    color: var(--button-text-color, #fff);
+
+    &.selected {
+      background-color: var(--button-selected-bg, #333);
+      font-weight: bold;
+    }
+
+    &.disabled {
+      background-color: #ccc;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    &.normal:hover {
+      background-color: var(--button-hover-bg, #555);
+    }
+  }
+
+  // Flèches de navigation (< et >)
+  > button:first-child,
+  > button:last-child {
+    background-color: #e0e0e0;
+    color: #333;
+    font-weight: bold;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+
+    &:hover:not(:disabled) {
+      background-color: #d0d0d0;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .week-selector {
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+
+    .day-btn {
+      font-size: 0.7rem;
+    }
+
+    .week-days {
+      gap: 0.4rem;
+    }
+	  // Flèches de navigation (< et >)
+	> button:first-child,
+	> button:last-child {
+		padding: 0rem 0.5rem;
+		border-radius: 6px;
+		font-size: 13px;
+	}
+  }
+}
+
