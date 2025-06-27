@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import WeekSelector from './WeekSelector';
 
 const SlotSelection = ({
@@ -14,6 +14,9 @@ const SlotSelection = ({
     onPrevStep,
     error
 }) => {
+    useEffect(() => {
+        setSelectedSlot(null);
+    }, [selectedDate]);
 
     return (
     <div className="slots-section">
