@@ -72,15 +72,17 @@ function ConfirmationForm({
     return (
         <div className="confirmation-section">
             <h3>Confirmation de la réservation</h3>
-            <p><strong>Date :</strong> {selectedDate}</p>
-            <p><strong>Heure :</strong> {selectedSlot}</p>
-            <ul>
+            <div className="recap-condensed">
+            <p><strong>{selectedDate}</strong> à <strong>{selectedSlot}</strong> – <strong>{totalDuration} min</strong></p>
+            
+            <p>
                 {selectedServices.map(service => (
-                    <li key={service.id}>{service.title} – {service.duration} min</li>
-                ))}
-            </ul>
-            <p><strong>Durée totale :</strong> {totalDuration} min</p>
-            <p><strong>Montant total :</strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0)} €</p>
+                `${service.title} (${service.duration}min, ${parseFloat(service.price).toFixed(2)}€)`
+                )).join(' · ')}
+            </p>
+
+            <p><strong>Total :</strong> {selectedServices.reduce((total, s) => total + parseFloat(s.price), 0).toFixed(2)} €</p>
+            </div>
 
             <form onSubmit={handleLocalSubmit}> {}
                 <input
