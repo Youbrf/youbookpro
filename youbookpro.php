@@ -34,7 +34,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/api/services-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/api/reservations-api.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api/create-reservation-api.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api/update-reservation-api.php';
-
+require_once plugin_dir_path(__FILE__) . 'includes/api/Authentification-check-api.php';
 
 function youbookpro_enqueue_all_scripts() {
     // Flatpickr
@@ -77,3 +77,15 @@ function create_block_youbookpro_block_init() {
 	}
 }
 add_action( 'init', 'create_block_youbookpro_block_init' );
+
+function youbookpro_print_react_config() {
+    ?>
+    <script type="text/javascript">
+        window.youbookproData = {
+            restUrl: "<?php echo esc_url_raw(rest_url('youbookpro/v1/current-user')); ?>",
+            nonce: "<?php echo wp_create_nonce('wp_rest'); ?>"
+        };
+    </script>
+    <?php
+}
+add_action('wp_footer', 'youbookpro_print_react_config');

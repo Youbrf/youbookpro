@@ -82,3 +82,19 @@ export async function fetchReservationsByDate(date) {
 export const OPENING_HOUR_MINUTES = 10 * 60;
 export const CLOSING_HOUR_MINUTES = 18 * 60;
 export const SLOT_INTERVAL_MINUTES = 30;
+
+export function saveBookingState({ selectedDate, selectedSlot, selectedServices, totalDuration }) {
+    const state = { selectedDate, selectedSlot, selectedServices, totalDuration };
+    sessionStorage.setItem('bookingState', JSON.stringify(state));
+}
+
+export function restoreBookingState() {
+    const savedState = sessionStorage.getItem('bookingState');
+    if (!savedState) return null;
+    try {
+        return JSON.parse(savedState);
+    } catch {
+        sessionStorage.removeItem('bookingState');
+        return null;
+    }
+}

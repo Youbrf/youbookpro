@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import ServiceSelection from './ServiceSelection'; 
 import SlotSelection from './SlotSelection';     
 import ConfirmationForm from './ConfirmationForm';
-import { fetchServices } from '../utils';
+import { fetchServices, restoreBookingState } from '../utils';
 
 function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHoverTextColor }) {
     const style = {
@@ -23,10 +23,25 @@ function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHo
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [disabledDates, setDisabledDatesGlobal] = useState([]); 
     const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
-    
+
     useEffect(() => {
         fetchServices()
-        .then(setServices)
+        .then(servicesData => {
+            setServices(servicesData);
+
+            const saved = restoreBookingState();
+            if (saved) {
+                setSelectedDate(saved.selectedDate);
+                setSelectedSlot(saved.selectedSlot);
+
+                const restoredServices = saved.selectedServices
+                    .map(savedService => servicesData.find(s => s.id === savedService.id))
+                    .filter(Boolean);
+                setSelectedServices(restoredServices);
+                setStep(3);
+                sessionStorage.removeItem('bookingState'); 
+            }
+        })
         .catch(err => {
             console.error(err);
             setError('Impossible de charger les services.');
