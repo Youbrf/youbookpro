@@ -13,6 +13,7 @@ add_action('rest_api_init', function() {
             'time'       => ['required' => true, 'type' => 'string'],
             'services'   => ['required' => true, 'type' => 'array'],
             'duration'   => ['required' => true, 'type' => 'integer'],
+            'notes'      => ['required' => false, 'type' => 'string'],
         ],
     ]);
 });
@@ -28,6 +29,7 @@ function youbookpro_handle_reservation(WP_REST_Request $request) {
     $time = sanitize_text_field($params['time']);
     $services = array_map('intval', $params['services']);
     $duration = intval($params['duration']);
+    $notes = isset($params['notes']) ? sanitize_textarea_field($params['notes']) : '';
 
     if (!is_email($email)) {
         return new WP_Error('invalid_email', 'Email invalide', ['status' => 400]);
@@ -70,6 +72,7 @@ function youbookpro_handle_reservation(WP_REST_Request $request) {
             '_youbook_reservation_duration'   => $duration,
             '_youbook_reservation_client_id'  => $user_id,
             '_youbook_reservation_employe_id' => $employe_id ?? null,
+            '_youbook_reservation_notes' => $notes,
         ],
     ];
 

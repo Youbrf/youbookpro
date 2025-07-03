@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import ServiceSelection from './ServiceSelection'; 
 import SlotSelection from './SlotSelection';     
 import ConfirmationForm from './ConfirmationForm';
+import ConfirmationSuccess from './ConfirmationSuccess';
 import { fetchServices, restoreBookingState } from '../utils';
 
 function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHoverTextColor }) {
@@ -23,6 +24,7 @@ function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHo
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [disabledDates, setDisabledDatesGlobal] = useState([]); 
     const totalDuration = selectedServices.reduce((sum, service) => sum + parseInt(service.duration), 0);
+    const [confirmationData, setConfirmationData] = useState(null);
 
     useEffect(() => {
         fetchServices()
@@ -82,7 +84,15 @@ function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHo
 
             const data = await res.json();
             
-            setStep(1);
+            setConfirmationData({
+                selectedDate,
+                selectedSlot,
+                selectedServices,
+                user: data.user,
+                reservationId: data.reservation_id,
+            });
+            setStep(4);
+
             setSelectedServices([]);
             setSelectedSlot(null);
             setSelectedDate(null);
@@ -171,6 +181,10 @@ function BookingBlock({ buttonColor, buttonTextColor, buttonHoverColor, buttonHo
                     }}
                     error={error} 
                 />
+            )}
+
+            {step === 4 && (
+                <ConfirmationSuccess confirmationData={confirmationData} />
             )}
         </div>
     );
